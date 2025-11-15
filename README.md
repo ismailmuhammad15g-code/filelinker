@@ -78,6 +78,24 @@ A modern, corporate-style file sharing platform that creates permanent links for
 
 ### Production Deployment
 
+#### Railway Deployment (Recommended)
+
+Deploy to Railway with one click:
+
+1. Push your code to GitHub
+2. Visit [Railway.app](https://railway.app) and create a new project
+3. Select "Deploy from GitHub repo"
+4. Add required environment variables (see DEPLOYMENT.md)
+5. Railway will automatically deploy using the Procfile
+
+**Important:** See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed Railway deployment instructions, including:
+- Environment variable configuration
+- Database setup
+- File storage with Railway Volumes
+- Troubleshooting common issues
+
+#### Docker Deployment
+
 1. **Update environment variables**
    ```bash
    cp .env.example .env
