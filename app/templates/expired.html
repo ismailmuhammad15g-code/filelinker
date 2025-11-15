@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block title %}Link Expired - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="expired-page">
+    <div class="container">
+        <div class="expired-container">
+            <div class="expired-card">
+                <div class="expired-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                
+                <h1>This Link Has Expired</h1>
+                <p>The file you're trying to access is no longer available.</p>
+                
+                <div class="expired-reasons">
+                    <p>This could be because:</p>
+                    <ul>
+                        <li>The link has reached its expiration date</li>
+                        <li>The file has been removed by the owner</li>
+                        <li>The maximum number of downloads has been reached</li>
+                    </ul>
+                </div>
+                
+                <div class="expired-actions">
+                    <a href="/" class="btn btn-primary">Go to Homepage</a>
+                    <a href="/upload" class="btn btn-secondary">Upload a File</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.expired-page {
+    padding: 80px 0;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.expired-container {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.expired-card {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+}
+
+.expired-icon {
+    color: #EF4444;
+    margin-bottom: 1.5rem;
+}
+
+.expired-card h1 {
+    font-size: 28px;
+    color: #0B2545;
+    margin-bottom: 1rem;
+}
+
+.expired-card > p {
+    font-size: 18px;
+    color: #6B7280;
+    margin-bottom: 2rem;
+}
+
+.expired-reasons {
+    background: #FEF2F2;
+    border: 1px solid #FEE2E2;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.expired-reasons p {
+    font-weight: 500;
+    color: #991B1B;
+    margin-bottom: 0.5rem;
+}
+
+.expired-reasons ul {
+    margin-left: 1.5rem;
+    color: #DC2626;
+}
+
+.expired-reasons li {
+    margin-bottom: 0.25rem;
+}
+
+.expired-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    .expired-actions {
+        flex-direction: column;
+    }
+    
+    .expired-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

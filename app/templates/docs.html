@@ -1,0 +1,321 @@
+{% extends "layout.html" %}
+
+{% block title %}Documentation - FileLink Pro{% endblock %}
+
+{% block content %}
+<div class="ms-docs-page">
+    <div class="ms-container">
+        <!-- Hero Section -->
+        <div class="ms-hero">
+            <div class="ms-breadcrumb">
+                <a href="/">Home</a>
+                <span class="ms-separator">></span>
+                <span class="ms-current">Documentation</span>
+            </div>
+            <h1 class="ms-hero-title">Complete documentation for FileLink Pro</h1>
+            <p class="ms-hero-subtitle">Everything you need to know to get the most out of our professional file sharing platform.</p>
+        </div>
+
+        <div class="ms-docs-layout">
+            <!-- Sidebar Navigation -->
+            <div class="ms-docs-nav">
+                <h3>Quick Navigation</h3>
+                <ul class="ms-nav-list">
+                    <li><a href="#getting-started" class="ms-nav-link">Getting Started</a></li>
+                    <li><a href="#uploading-files" class="ms-nav-link">Uploading Files</a></li>
+                    <li><a href="#sharing-links" class="ms-nav-link">Sharing Links</a></li>
+                    <li><a href="#password-protection" class="ms-nav-link">Password Protection</a></li>
+                    <li><a href="#file-previews" class="ms-nav-link">File Previews</a></li>
+                    <li><a href="#api-reference" class="ms-nav-link">API Reference</a></li>
+                    <li><a href="#troubleshooting" class="ms-nav-link">Troubleshooting</a></li>
+                </ul>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="ms-docs-content">
+                <section id="getting-started" class="ms-docs-section">
+                    <h2>Getting Started</h2>
+                    <p>Welcome to FileLink Pro! This documentation will help you get the most out of our professional file sharing platform.</p>
+                    
+                    <h3>What is FileLink Pro?</h3>
+                    <p>FileLink Pro is a secure, reliable file sharing service designed for individuals and businesses who need more than basic file sharing. With features like password protection, file previews, and comprehensive analytics, it's the perfect solution for professional workflows.</p>
+                    
+                    <div class="ms-docs-features">
+                        <div class="ms-docs-feature-card">
+                            <div class="ms-docs-feature-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                                </svg>
+                            </div>
+                            <h4>Instant Sharing</h4>
+                            <p>Generate shareable links instantly with just a few clicks</p>
+                        </div>
+                        <div class="ms-docs-feature-card">
+                            <div class="ms-docs-feature-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                                </svg>
+                            </div>
+                            <h4>Secure by Default</h4>
+                            <p>All files are encrypted and protected with enterprise-grade security</p>
+                        </div>
+                        <div class="ms-docs-feature-card">
+                            <div class="ms-docs-feature-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                                </svg>
+                            </div>
+                            <h4>Rich Previews</h4>
+                            <p>Preview files without downloading - perfect for collaboration</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="uploading-files" class="ms-docs-section">
+                    <h2>Uploading Files</h2>
+                    <p>FileLink Pro supports all file types and makes uploading simple and fast.</p>
+                    
+                    <div class="ms-docs-card">
+                        <h3>Supported File Types</h3>
+                        <p>We support virtually any file type you can think of:</p>
+                        <div class="ms-file-types">
+                            <div class="ms-file-type-group">
+                                <strong>Documents</strong>
+                                <span>PDF, DOC, DOCX, TXT, MD</span>
+                            </div>
+                            <div class="ms-file-type-group">
+                                <strong>Images</strong>
+                                <span>JPG, PNG, GIF, SVG, WebP</span>
+                            </div>
+                            <div class="ms-file-type-group">
+                                <strong>Videos</strong>
+                                <span>MP4, WebM, AVI, MOV</span>
+                            </div>
+                            <div class="ms-file-type-group">
+                                <strong>Audio</strong>
+                                <span>MP3, WAV, OGG</span>
+                            </div>
+                            <div class="ms-file-type-group">
+                                <strong>Code</strong>
+                                <span>HTML, CSS, JS, Python, Java, C++</span>
+                            </div>
+                            <div class="ms-file-type-group">
+                                <strong>Archives</strong>
+                                <span>ZIP, RAR, TAR.GZ</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-docs-card">
+                        <h3>Upload Process</h3>
+                        <ol class="ms-step-list">
+                            <li>Click the "Upload Your File" button</li>
+                            <li>Select your file(s) from your device</li>
+                            <li>Optionally set a password for protection</li>
+                            <li>Click "Generate Link" to create your shareable URL</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section id="sharing-links" class="ms-docs-section">
+                    <h2>Sharing Links</h2>
+                    <p>Once your file is uploaded, you'll receive a permanent shareable link that never expires.</p>
+                    
+                    <div class="ms-docs-card">
+                        <h3>Link Features</h3>
+                        <div class="ms-feature-list">
+                            <div class="ms-feature-item">
+                                <div class="ms-feature-check">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                    </svg>
+                                </div>
+                                <span>Permanent URLs that never change</span>
+                            </div>
+                            <div class="ms-feature-item">
+                                <div class="ms-feature-check">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                    </svg>
+                                </div>
+                                <span>Work on any device or platform</span>
+                            </div>
+                            <div class="ms-feature-item">
+                                <div class="ms-feature-check">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                    </svg>
+                                </div>
+                                <span>Support for direct embedding</span>
+                            </div>
+                            <div class="ms-feature-item">
+                                <div class="ms-feature-check">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                    </svg>
+                                </div>
+                                <span>Analytics and tracking available</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-code-block">
+                        <div class="ms-code-header">
+                            <span>Example Link</span>
+                        </div>
+                        <code>https://filelink.pro/share/abc123def456</code>
+                    </div>
+                </section>
+
+                <section id="password-protection" class="ms-docs-section">
+                    <h2>Password Protection</h2>
+                    <p>Secure your files with password protection for sensitive content.</p>
+                    
+                    <div class="ms-docs-card">
+                        <h3>How It Works</h3>
+                        <p>When you upload a file, you can optionally set a password. Anyone accessing the link will need to enter this password before they can view or download the file.</p>
+                    </div>
+                    
+                    <div class="ms-docs-card">
+                        <h3>Security Features</h3>
+                        <div class="ms-security-features">
+                            <div class="ms-security-feature">
+                                <div class="ms-security-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#d83b01">
+                                        <path d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10A2,2 0 0,1 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <strong>Encrypted Storage</strong>
+                                    <p>Passwords are encrypted and never stored in plain text</p>
+                                </div>
+                            </div>
+                            <div class="ms-security-feature">
+                                <div class="ms-security-icon">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#d83b01">
+                                        <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <strong>Brute Force Protection</strong>
+                                    <p>Advanced protection prevents unauthorized access attempts</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="file-previews" class="ms-docs-section">
+                    <h2>File Previews</h2>
+                    <p>Preview files directly in your browser without downloading them first.</p>
+                    
+                    <div class="ms-preview-types">
+                        <div class="ms-preview-type">
+                            <div class="ms-preview-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                            </div>
+                            <h4>Images & Documents</h4>
+                            <p>Full-resolution preview with zoom for images, multi-page viewer for PDFs</p>
+                        </div>
+                        <div class="ms-preview-type">
+                            <div class="ms-preview-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/>
+                                </svg>
+                            </div>
+                            <h4>Media Files</h4>
+                            <p>HTML5 video player with controls, built-in audio player</p>
+                        </div>
+                        <div class="ms-preview-type">
+                            <div class="ms-preview-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z"/>
+                                </svg>
+                            </div>
+                            <h4>Code Files</h4>
+                            <p>Syntax-highlighted viewer for programming languages and text files</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="api-reference" class="ms-docs-section">
+                    <h2>API Reference</h2>
+                    <p>Integrate FileLink Pro into your applications with our RESTful API.</p>
+                    
+                    <div class="ms-docs-card">
+                        <h3>Authentication</h3>
+                        <p>API access requires an API key. Contact our support team to get your key.</p>
+                    </div>
+                    
+                    <div class="ms-api-endpoint">
+                        <div class="ms-api-method">
+                            <span class="ms-method-badge ms-post">POST</span>
+                            <span class="ms-endpoint-url">/api/upload</span>
+                        </div>
+                        <p>Upload a file and generate a shareable link</p>
+                        
+                        <div class="ms-code-block">
+                            <div class="ms-code-header">
+                                <span>cURL Example</span>
+                            </div>
+                            <code>curl -X POST https://filelink.pro/api/upload \<br>
+  -H "Authorization: Bearer YOUR_API_KEY" \<br>
+  -F "file=@example.pdf" \<br>
+  -F "password=optional_password"</code>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-api-endpoint">
+                        <div class="ms-api-method">
+                            <span class="ms-method-badge ms-get">GET</span>
+                            <span class="ms-endpoint-url">/api/file/:id</span>
+                        </div>
+                        <p>Get file information and download URL</p>
+                    </div>
+                </section>
+
+                <section id="troubleshooting" class="ms-docs-section">
+                    <h2>Troubleshooting</h2>
+                    
+                    <div class="ms-troubleshooting">
+                        <div class="ms-trouble-section">
+                            <h3>File Won't Upload</h3>
+                            <ul class="ms-trouble-list">
+                                <li>Check your internet connection</li>
+                                <li>Ensure file size is under the limit (500MB)</li>
+                                <li>Try refreshing the page and uploading again</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="ms-trouble-section">
+                            <h3>Password Protection Not Working</h3>
+                            <ul class="ms-trouble-list">
+                                <li>Ensure you're entering the correct password</li>
+                                <li>Passwords are case-sensitive</li>
+                                <li>Try clearing your browser cache</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="ms-trouble-section">
+                            <h3>File Preview Not Loading</h3>
+                            <ul class="ms-trouble-list">
+                                <li>Check if the file type supports previews</li>
+                                <li>Ensure JavaScript is enabled in your browser</li>
+                                <li>Try downloading the file if preview fails</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-support-card">
+                        <h3>Need More Help?</h3>
+                        <p>If you're still experiencing issues, please contact our support team.</p>
+                        <a href="mailto:support@filelink.pro" class="ms-btn ms-btn-primary">Contact Support</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

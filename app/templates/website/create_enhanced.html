@@ -1,0 +1,322 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Website - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="create-website-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Create Your Website</h1>
+            <p>Build and publish your website with multiple files support</p>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="create-card">
+            <form method="POST" action="{{ url_for('website.create_website') }}" class="website-form">
+                <div class="form-section">
+                    <h2>Website Details</h2>
+                    
+                    <div class="form-group">
+                        <label for="name">Website Name <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" class="form-input" 
+                               placeholder="My Awesome Website" required>
+                        <small class="form-help">This will be used to generate your website URL</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" class="form-input" rows="3"
+                                  placeholder="Describe your website..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2>Privacy Settings</h2>
+                    
+                    <div class="form-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" name="is_public" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">Make website public</span>
+                        </label>
+                        <small class="form-help">Public websites can be accessed by anyone with the link</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password Protection (Optional)</label>
+                        <input type="password" id="password" name="password" class="form-input"
+                               placeholder="Leave blank for no password">
+                        <small class="form-help">Visitors will need this password to access your website</small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path>
+                        </svg>
+                        Create Website
+                    </button>
+                    <a href="{{ url_for('auth.dashboard') }}" class="btn btn-secondary btn-lg">Cancel</a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="info-panel">
+            <h3>What You Can Upload</h3>
+            <div class="file-types">
+                <div class="file-type">
+                    <span class="icon">📄</span>
+                    <span>HTML Files</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">🎨</span>
+                    <span>CSS Styles</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">⚡</span>
+                    <span>JavaScript</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">🖼️</span>
+                    <span>Images (JPG, PNG, GIF, SVG)</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">🎥</span>
+                    <span>Videos (MP4, WebM)</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">🎵</span>
+                    <span>Audio Files</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">📁</span>
+                    <span>Documents (PDF, DOC)</span>
+                </div>
+                <div class="file-type">
+                    <span class="icon">🗂️</span>
+                    <span>And More!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.create-website-page {
+    padding: 40px 0;
+    min-height: 80vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.page-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 42px;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+.create-card {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+}
+
+.form-section h2 {
+    font-size: 20px;
+    color: #0B2545;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.required {
+    color: #EF4444;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea.form-input {
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background: #E5E7EB;
+    border-radius: 24px;
+    margin-right: 12px;
+    transition: background 0.3s;
+}
+
+.toggle-slider::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s;
+}
+
+input[type="checkbox"]:checked + .toggle-slider {
+    background: #667eea;
+}
+
+input[type="checkbox"]:checked + .toggle-slider::after {
+    transform: translateX(24px);
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-text {
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-panel {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.info-panel h3 {
+    font-size: 20px;
+    color: #0B2545;
+    margin-bottom: 1.5rem;
+}
+
+.file-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.file-type {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #F7F9FB;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.file-type:hover {
+    border-color: #667eea;
+    background: #F3F4F6;
+}
+
+.file-type .icon {
+    font-size: 24px;
+}
+
+.file-type span:last-child {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4B5563;
+}
+
+@media (max-width: 768px) {
+    .create-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .file-types {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

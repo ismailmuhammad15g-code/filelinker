@@ -1,0 +1,3998 @@
+/* 
+ * FileLink Pro - Enhanced Professional Stylesheet
+ * Modern, responsive, corporate design with animations
+ * Enhanced Color Palette:
+ * - Deep Navy: #0B2545
+ * - Soft Gray: #F7F9FB  
+ * - White: #FFFFFF
+ * - Primary Blue: #0D6EFD
+ * - Success Green: #10B981
+ * - Warning Orange: #F59E0B
+ * - Error Red: #EF4444
+ * - Gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+ */
+
+/* ===== Reset & Base Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== Modern Animations ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #0B2545;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    scroll-behavior: smooth;
+}
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    color: #0B2545;
+}
+
+h1 { font-size: 48px; }
+h2 { font-size: 36px; }
+h3 { font-size: 24px; }
+h4 { font-size: 20px; }
+
+p {
+    color: #4A5568;
+    margin-bottom: 1rem;
+}
+
+a {
+    color: #0D6EFD;
+    text-decoration: none;
+}
+
+/* ===== Layout Components ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== Navigation ===== */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid #E5E7EB;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.navbar.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.nav-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0B2545;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-link {
+    color: #4A5568;
+    font-weight: 500;
+}
+
+.nav-cta {
+    background: #0D6EFD;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+}
+
+.mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-menu-btn span {
+    width: 24px;
+    height: 2px;
+    background: #0B2545;
+}
+
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 1rem;
+    z-index: 999;
+}
+
+.mobile-nav-link {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #4A5568;
+    border-bottom: 1px solid #F7F9FB;
+}
+
+/* ===== Hero Section ===== */
+.hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    animation: shimmer 20s infinite linear;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 56px;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+    animation: fadeInUp 1s ease-out;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 3rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    color: #0B2545;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Enhanced Buttons ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #e67ff0 0%, #f04757 100%);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #0B2545;
+    border: 1px solid #E5E7EB;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 18px;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+}
+
+/* ===== Upload Section ===== */
+.upload-section {
+    padding: 60px 0;
+    background: #FFFFFF;
+}
+
+.upload-box {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 3rem;
+    border: 2px dashed #E5E7EB;
+    border-radius: 12px;
+    text-align: center;
+    background: #F7F9FB;
+}
+
+.upload-icon {
+    color: #9CA3AF;
+    margin-bottom: 1rem;
+}
+
+.upload-title {
+    font-size: 24px;
+    margin-bottom: 0.5rem;
+    color: #0B2545;
+}
+
+.upload-text {
+    color: #6B7280;
+    margin-bottom: 1.5rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.upload-label {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #0D6EFD;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.upload-info {
+    margin-top: 1rem;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+/* ===== Features Section ===== */
+.features {
+    padding: 80px 0;
+    background: #F7F9FB;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 18px;
+    color: #6B7280;
+    margin-bottom: 3rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    padding: 2.5rem;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid #E5E7EB;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 0.8s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    font-size: 48px;
+    margin-bottom: 1rem;
+}
+
+.feature-title {
+    font-size: 20px;
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    color: #6B7280;
+    line-height: 1.6;
+}
+
+/* ===== How It Works ===== */
+.how-it-works {
+    padding: 80px 0;
+    background: white;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.step {
+    text-align: center;
+    max-width: 300px;
+}
+
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: #0D6EFD;
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.step-title {
+    font-size: 20px;
+    margin-bottom: 0.5rem;
+}
+
+.step-description {
+    color: #6B7280;
+}
+
+/* ===== CTA Section ===== */
+.cta-section {
+    padding: 80px 0;
+    background: #0B2545;
+    text-align: center;
+}
+
+.cta-title {
+    color: white;
+    font-size: 42px;
+    margin-bottom: 1rem;
+}
+
+.cta-text {
+    color: #CBD5E1;
+    font-size: 18px;
+    margin-bottom: 2rem;
+}
+
+/* ===== Microsoft-Style Upload Page ===== */
+.upload-page {
+    padding: 60px 0;
+    min-height: 80vh;
+    background: #faf9f8;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 42px;
+    margin-bottom: 1rem;
+    color: #323130;
+    font-weight: 600;
+}
+
+.page-subtitle {
+    text-align: center;
+    color: #605e5c;
+    font-size: 18px;
+    margin-bottom: 3rem;
+}
+
+.ms-upload-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ms-upload-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+.ms-upload-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.ms-upload-card {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 20px 0;
+}
+
+.ms-drop-box {
+    border: 3px dashed #d2d0ce;
+    border-radius: 8px;
+    padding: 40px 24px;
+    text-align: center;
+    background: #faf9f8;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.ms-drop-box:hover,
+.ms-drop-box.ms-dragover {
+    border-color: #0078d4;
+    background: #f8fbff;
+    transform: translateY(-2px);
+}
+
+.ms-drop-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.ms-upload-animation {
+    margin-bottom: 8px;
+}
+
+.ms-upload-gif {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.ms-drop-header {
+    margin-bottom: 8px;
+}
+
+.ms-drop-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #323130;
+    margin: 0;
+}
+
+.ms-drop-text {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0 0 20px 0;
+    line-height: 1.4;
+}
+
+.ms-file-input {
+    display: none;
+}
+
+.ms-btn-choose {
+    background: #0078d4;
+    color: white;
+    border: 1px solid #0078d4;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ms-btn-choose:hover {
+    background: #106ebe;
+    border-color: #106ebe;
+    transform: translateY(-1px);
+}
+
+.ms-file-preview {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f3f2f1;
+    border-radius: 8px;
+    border: 1px solid #e1e5e9;
+}
+
+.ms-selected-file {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ms-file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ms-file-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 4px 0;
+    word-break: break-word;
+}
+
+.ms-file-size {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0;
+}
+
+.ms-upload-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ms-options-card {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-form-group {
+    margin-bottom: 20px;
+}
+
+.ms-form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #323130;
+    margin-bottom: 8px;
+}
+
+.ms-form-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #323130;
+    background: white;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.ms-form-input:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+}
+
+.ms-form-input::placeholder {
+    color: #a19f9d;
+}
+
+.ms-form-help {
+    display: block;
+    font-size: 12px;
+    color: #605e5c;
+    margin-top: 4px;
+    line-height: 1.3;
+}
+
+.ms-btn-full {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.ms-btn-small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Responsive design for upload form */
+@media (max-width: 1024px) {
+    .ms-upload-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .ms-upload-sidebar {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 32px;
+    }
+    
+    .ms-upload-card,
+    .ms-options-card {
+        padding: 20px;
+    }
+    
+    .ms-drop-box {
+        padding: 32px 20px;
+    }
+    
+    .ms-upload-gif {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .ms-selected-file {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-page {
+        padding: 40px 0;
+    }
+    
+    .page-title {
+        font-size: 28px;
+    }
+    
+    .ms-upload-card,
+    .ms-options-card {
+        padding: 16px;
+    }
+    
+    .ms-drop-box {
+        padding: 24px 16px;
+    }
+    
+    .ms-upload-gif {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+.upload-progress {
+    text-align: center;
+    padding: 3rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0;
+    transition: width 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 75%, transparent 75%, transparent);
+    background-size: 20px 20px;
+    animation: shimmer 1s infinite linear;
+}
+
+/* ===== Microsoft-Style Upload Success Form ===== */
+.ms-upload-success {
+    animation: fadeInUp 0.6s ease-out;
+    margin-top: 2rem;
+}
+
+.ms-success-card {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.ms-success-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 24px 24px 24px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.ms-success-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+.ms-success-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ms-success-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.ms-success-subtitle {
+    font-size: 15px;
+    color: #605e5c;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.ms-success-section {
+    padding: 24px;
+    border-bottom: 1px solid #f3f2f1;
+}
+
+.ms-success-section:last-child {
+    border-bottom: none;
+}
+
+.ms-success-link-box {
+    margin-top: 16px;
+}
+
+.ms-success-link-box .ms-input-group {
+    margin-bottom: 12px;
+}
+
+.ms-link-help {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ms-help-text {
+    font-size: 13px;
+    color: #605e5c;
+}
+
+.ms-success-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ms-success-actions .ms-btn {
+    flex: 1;
+    min-width: 140px;
+    justify-content: center;
+}
+
+/* File details styling */
+.ms-file-details .ms-section-title {
+    margin-bottom: 16px;
+}
+
+.ms-file-details .ms-details-grid {
+    display: grid;
+    gap: 8px;
+}
+
+.ms-file-details .ms-detail-row {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.ms-file-details .ms-detail-label {
+    color: #605e5c;
+    font-weight: 500;
+}
+
+.ms-file-details .ms-detail-value {
+    color: #323130;
+    word-break: break-word;
+}
+
+/* Responsive design for success form */
+@media (max-width: 768px) {
+    .ms-success-header {
+        padding: 24px 20px 20px 20px;
+    }
+    
+    .ms-success-section {
+        padding: 20px;
+    }
+    
+    .ms-success-actions {
+        flex-direction: column;
+    }
+    
+    .ms-success-actions .ms-btn {
+        min-width: auto;
+    }
+    
+    .ms-file-details .ms-detail-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    
+    .ms-file-details .ms-detail-label {
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 480px) {
+    .ms-success-header {
+        padding: 20px 16px 16px 16px;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .ms-success-section {
+        padding: 16px;
+    }
+    
+    .ms-success-title {
+        font-size: 20px;
+    }
+}
+
+/* ===== Share Page ===== */
+.share-page {
+    padding: 60px 0;
+    min-height: 80vh;
+}
+
+.share-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.file-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 1px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.file-icon {
+    color: #6B7280;
+    margin-bottom: 1.5rem;
+}
+
+.file-name {
+    font-size: 28px;
+    margin-bottom: 1.5rem;
+    word-break: break-word;
+}
+
+.file-meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.meta-item {
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.file-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.share-link-box {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.share-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.link-input-group {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.share-link-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    background: #F7F9FB;
+    font-size: 14px;
+}
+
+.preview-section {
+    margin-top: 2rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: #F7F9FB;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.preview-container {
+    height: 600px;
+    background: white;
+}
+
+.preview-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.file-info-section {
+    background: #F7F9FB;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.info-table {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.info-table td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.info-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== Modal ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 28px;
+    font-weight: bold;
+    color: #6B7280;
+    cursor: pointer;
+}
+
+.modal-title {
+    margin-bottom: 1rem;
+}
+
+.modal-body {
+    color: #6B7280;
+}
+
+/* ===== Footer ===== */
+.footer {
+    background: #0B2545;
+    color: white;
+    padding: 60px 0 20px;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section {
+    margin-bottom: 2rem;
+}
+
+.footer-title {
+    font-size: 24px;
+    margin-bottom: 1rem;
+}
+
+.footer-heading {
+    font-size: 16px;
+    margin-bottom: 1rem;
+    color: #CBD5E1;
+}
+
+.footer-text {
+    color: #94A3B8;
+    line-height: 1.6;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    color: #94A3B8;
+}
+
+.footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid #1E3A5F;
+    text-align: center;
+    color: #64748B;
+}
+
+/* ===== Enhanced Alerts & Messages ===== */
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+    animation: slideIn 0.5s ease-out;
+}
+
+.alert-success {
+    background: linear-gradient(145deg, #f0fdf4 0%, #dcfce7 100%);
+    border-color: #10B981;
+    color: #065f46;
+}
+
+.alert-danger {
+    background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #EF4444;
+    color: #991b1b;
+}
+
+.alert-warning {
+    background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #F59E0B;
+    color: #92400e;
+}
+
+.alert-info {
+    background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: #3B82F6;
+    color: #1e40af;
+}
+
+/* ===== Loading States ===== */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+/* ===== Microsoft-Style Share Page ===== */
+.ms-share-page {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.ms-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.ms-header {
+    background: white;
+    border-bottom: 1px solid #e1e5e9;
+    padding: 16px 24px;
+}
+
+.ms-breadcrumb {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #605e5c;
+}
+
+.ms-breadcrumb a {
+    color: #0078d4;
+    text-decoration: none;
+}
+
+.ms-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.ms-separator {
+    margin: 0 8px;
+    color: #a19f9d;
+}
+
+.ms-current {
+    color: #323130;
+    font-weight: 600;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ms-content {
+    padding: 24px;
+    background: white;
+    margin: 0;
+}
+
+.ms-file-card {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ms-file-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.ms-file-icon {
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.ms-file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ms-file-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.ms-file-details {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: #605e5c;
+    gap: 8px;
+}
+
+.ms-detail {
+    white-space: nowrap;
+}
+
+.ms-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.ms-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.1s ease-in-out;
+    min-height: 32px;
+    box-sizing: border-box;
+}
+
+.ms-btn:hover {
+    text-decoration: none;
+}
+
+.ms-btn-primary {
+    background: #0078d4;
+    color: white;
+    border-color: #0078d4;
+}
+
+.ms-btn-primary:hover {
+    background: #106ebe;
+    border-color: #106ebe;
+    color: white;
+}
+
+.ms-btn-secondary {
+    background: white;
+    color: #323130;
+    border-color: #8a8886;
+}
+
+.ms-btn-secondary:hover {
+    background: #f3f2f1;
+    color: #323130;
+}
+
+.ms-btn-text {
+    background: transparent;
+    color: #0078d4;
+    border: none;
+    padding: 4px 8px;
+}
+
+.ms-btn-text:hover {
+    background: #f3f2f1;
+    color: #0078d4;
+}
+
+.ms-share-section {
+    border-top: 1px solid #e1e5e9;
+    padding-top: 24px;
+}
+
+.ms-input-group {
+    display: flex;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    overflow: hidden;
+    background: white;
+}
+
+.ms-share-input {
+    flex: 1;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #323130;
+    background: transparent;
+    outline: none;
+}
+
+.ms-share-copy {
+    background: #f3f2f1;
+    border: none;
+    border-left: 1px solid #e1e5e9;
+    padding: 8px 12px;
+    color: #605e5c;
+    cursor: pointer;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.ms-share-copy:hover {
+    background: #edebe9;
+}
+
+.ms-preview-section {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.ms-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e1e5e9;
+    background: #faf9f8;
+}
+
+.ms-preview-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+}
+
+.ms-preview-container {
+    height: 500px;
+    background: white;
+}
+
+.ms-preview-container {
+    min-height: 500px;
+    background: white;
+    position: relative;
+}
+
+.ms-preview-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Loading Indicator */
+.ms-preview-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    background: white;
+}
+
+.ms-loading-spinner {
+    margin-bottom: 20px;
+}
+
+.ms-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f2f1;
+    border-top: 4px solid #0078d4;
+    border-radius: 50%;
+    animation: ms-spin 1s linear infinite;
+}
+
+@keyframes ms-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.ms-loading-text h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    text-align: center;
+}
+
+.ms-loading-text p {
+    margin: 0;
+    font-size: 14px;
+    color: #605e5c;
+    text-align: center;
+}
+
+/* Image Preview */
+.ms-image-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 20px;
+    background: #faf9f8;
+}
+
+.ms-preview-img {
+    max-width: 100%;
+    max-height: 500px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* PDF Preview */
+.ms-pdf-preview {
+    height: 600px;
+    width: 100%;
+}
+
+.ms-preview-pdf {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Audio Preview */
+.ms-audio-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #faf9f8;
+}
+
+.ms-media-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.ms-media-icon {
+    margin-bottom: 15px;
+}
+
+.ms-media-info h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    text-align: center;
+}
+
+.ms-preview-audio {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Video Preview */
+.ms-video-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 20px;
+    background: #000;
+}
+
+.ms-preview-video {
+    width: 100%;
+    max-width: 800px;
+    max-height: 500px;
+}
+
+/* Text Preview */
+.ms-text-preview {
+    background: white;
+}
+
+.ms-code-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e1e5e9;
+    font-size: 12px;
+}
+
+.ms-file-type {
+    background: #0078d4;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.ms-file-name {
+    color: #605e5c;
+    font-weight: 500;
+}
+
+.ms-code-container {
+    max-height: 500px;
+    overflow: auto;
+}
+
+.ms-code-content {
+    margin: 0;
+    padding: 16px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #323130;
+    background: white;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: none;
+    outline: none;
+}
+
+/* HTML/iframe Preview */
+.ms-html-preview {
+    height: 500px;
+}
+
+.ms-preview-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+/* Error State */
+.ms-preview-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.ms-error-icon {
+    margin-bottom: 20px;
+}
+
+.ms-preview-error h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+}
+
+.ms-preview-error p {
+    margin: 0;
+    font-size: 14px;
+    color: #605e5c;
+    max-width: 400px;
+    line-height: 1.4;
+}
+
+.ms-details-section {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.ms-section-title {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+}
+
+.ms-details-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.ms-detail-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f2f1;
+}
+
+.ms-detail-row:last-child {
+    border-bottom: none;
+}
+
+.ms-detail-label {
+    font-size: 14px;
+    color: #605e5c;
+    font-weight: 400;
+}
+
+.ms-detail-value {
+    font-size: 14px;
+    color: #323130;
+    word-break: break-all;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ms-content {
+        padding: 16px;
+    }
+    
+    .ms-file-card {
+        padding: 16px;
+    }
+    
+    .ms-file-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .ms-file-icon {
+        margin-right: 0;
+        margin-bottom: 12px;
+    }
+    
+    .ms-actions {
+        flex-direction: column;
+    }
+    
+    .ms-btn {
+        justify-content: center;
+    }
+    
+    .ms-detail-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    
+    .ms-detail-label {
+        font-weight: 600;
+    }
+    
+    .ms-breadcrumb {
+        padding: 12px 16px;
+    }
+    
+    .ms-current {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ms-header {
+        padding: 12px 16px;
+    }
+    
+    .ms-content {
+        padding: 12px;
+    }
+    
+    .ms-file-card {
+        padding: 12px;
+    }
+    
+    .ms-file-name {
+        font-size: 18px;
+    }
+    
+    .ms-current {
+        max-width: 150px;
+    }
+}
+
+/* ===== Microsoft-Style Password Page ===== */
+.ms-password-page {
+    background: #f8f9fa;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.ms-password-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ms-password-header {
+    background: white;
+    border-bottom: 1px solid #e1e5e9;
+    padding: 16px 24px;
+}
+
+.ms-password-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 60px);
+    padding: 40px 24px;
+}
+
+.ms-password-card {
+    background: white;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 48px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Lock Section */
+.ms-lock-section {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.ms-lock-icon {
+    position: relative;
+}
+
+.ms-lock-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Password Info */
+.ms-password-info {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.ms-password-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+}
+
+.ms-password-subtitle {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Form Styles */
+.ms-password-form {
+    margin-bottom: 24px;
+}
+
+.ms-form-group {
+    margin-bottom: 20px;
+}
+
+.ms-form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #323130;
+    margin-bottom: 4px;
+}
+
+.ms-password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ms-password-input {
+    width: 100%;
+    padding: 8px 40px 8px 12px;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #323130;
+    background: white;
+    transition: border-color 0.1s ease-in-out;
+}
+
+.ms-password-input:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+}
+
+.ms-password-toggle {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #605e5c;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 2px;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.ms-password-toggle:hover {
+    background: #f3f2f1;
+}
+
+/* Button Styles */
+.ms-btn-full {
+    width: 100%;
+    justify-content: center;
+    position: relative;
+    min-height: 40px;
+}
+
+.ms-btn-spinner {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ms-spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: ms-spin 1s linear infinite;
+}
+
+/* Help Section */
+.ms-password-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px;
+    background: #faf9f8;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.ms-help-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.ms-password-help p {
+    margin: 0;
+    font-size: 14px;
+    color: #605e5c;
+    line-height: 1.4;
+}
+
+/* Security Notice */
+.ms-security-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    padding: 8px;
+    background: #f3f9f1;
+    border-radius: 4px;
+    border: 1px solid #c7e6c0;
+}
+
+.ms-security-icon {
+    flex-shrink: 0;
+}
+
+.ms-security-notice span {
+    font-size: 12px;
+    color: #107c10;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ms-password-content {
+        padding: 20px 16px;
+    }
+    
+    .ms-password-card {
+        padding: 32px 24px;
+        margin: 0 auto;
+    }
+    
+    .ms-password-header {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ms-password-card {
+        padding: 24px 16px;
+    }
+    
+    .ms-password-title {
+        font-size: 18px;
+    }
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none;
+    }
+    
+    .mobile-menu-btn {
+        display: flex;
+    }
+    
+    .hero-title {
+        font-size: 36px;
+    }
+    
+    .hero-subtitle {
+        font-size: 16px;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .steps {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .file-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .file-actions .btn {
+        width: 100%;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 28px;
+    }
+    
+    .section-title {
+        font-size: 28px;
+    }
+    
+    .upload-box {
+        padding: 1.5rem;
+    }
+    
+    .file-card {
+        padding: 1.5rem;
+    }
+}
+
+/* =============================================================================
+   Features Page Styles
+   ============================================================================= */
+
+.ms-features-page {
+    background: #faf9f8;
+    min-height: 100vh;
+    padding: 0 0 80px 0;
+}
+
+.ms-feature-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin: 48px 0;
+}
+
+.ms-category-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 32px 24px;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: #0078d4;
+}
+
+.ms-category-icon {
+    margin-bottom: 16px;
+}
+
+.ms-category-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #323130;
+    margin-bottom: 12px;
+}
+
+.ms-category-card p {
+    color: #605e5c;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.ms-features-section {
+    margin: 64px 0;
+}
+
+.ms-section-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #323130;
+    margin-bottom: 48px;
+    text-align: center;
+}
+
+.ms-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.ms-feature-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+
+.ms-feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #0078d4;
+}
+
+.ms-feature-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.ms-feature-icon {
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.ms-feature-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0;
+}
+
+.ms-feature-card p {
+    color: #605e5c;
+    line-height: 1.5;
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Enterprise Section */
+.ms-enterprise-section {
+    background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+    border-radius: 12px;
+    padding: 48px;
+    margin: 64px 0;
+    color: white;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 48px;
+    align-items: center;
+}
+
+.ms-enterprise-content h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.ms-enterprise-content > p {
+    font-size: 16px;
+    margin-bottom: 24px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+.ms-enterprise-features {
+    display: grid;
+    gap: 12px;
+}
+
+.ms-enterprise-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ms-check-icon {
+    flex-shrink: 0;
+}
+
+.ms-enterprise-feature span {
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.ms-enterprise-stats {
+    display: grid;
+    gap: 24px;
+}
+
+.ms-stat {
+    text-align: center;
+}
+
+.ms-stat-number {
+    display: block;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.ms-stat-label {
+    display: block;
+    font-size: 14px;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+/* CTA Section */
+.ms-cta-section {
+    text-align: center;
+    padding: 64px 0;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e1dfdd;
+    margin: 48px 0;
+}
+
+.ms-cta-section h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #323130;
+    margin-bottom: 16px;
+}
+
+.ms-cta-section p {
+    color: #605e5c;
+    font-size: 16px;
+    margin-bottom: 32px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ms-cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* =============================================================================
+   Documentation Page Styles
+   ============================================================================= */
+
+.ms-docs-page {
+    background: #faf9f8;
+    min-height: 100vh;
+    padding: 0 0 80px 0;
+}
+
+.ms-docs-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 48px;
+    margin-top: 48px;
+}
+
+.ms-docs-nav {
+    position: sticky;
+    top: 24px;
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    height: fit-content;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-docs-nav h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e1dfdd;
+}
+
+.ms-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ms-nav-list li {
+    margin-bottom: 4px;
+}
+
+.ms-nav-link {
+    display: block;
+    padding: 8px 12px;
+    color: #605e5c;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ms-nav-link:hover {
+    background: #f3f2f1;
+    color: #323130;
+}
+
+.ms-nav-link.active {
+    background: #deecf9;
+    color: #0078d4;
+}
+
+.ms-docs-content {
+    max-width: 100%;
+}
+
+.ms-docs-section {
+    margin-bottom: 64px;
+}
+
+.ms-docs-section h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 24px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #0078d4;
+}
+
+.ms-docs-section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #323130;
+    margin: 32px 0 16px 0;
+}
+
+.ms-docs-section h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 24px 0 12px 0;
+}
+
+.ms-docs-section p {
+    color: #605e5c;
+    line-height: 1.6;
+    margin: 16px 0;
+    font-size: 15px;
+}
+
+.ms-docs-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 24px 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.ms-docs-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #323130;
+}
+
+.ms-docs-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin: 32px 0;
+}
+
+.ms-docs-feature-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.ms-docs-feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #0078d4;
+}
+
+.ms-docs-feature-icon {
+    margin-bottom: 12px;
+}
+
+.ms-docs-feature-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 8px 0;
+}
+
+.ms-docs-feature-card p {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* File types display */
+.ms-file-types {
+    display: grid;
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.ms-file-type-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f3f2f1;
+    border-radius: 6px;
+    border-left: 4px solid #0078d4;
+}
+
+.ms-file-type-group strong {
+    color: #323130;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.ms-file-type-group span {
+    color: #605e5c;
+    font-size: 13px;
+    font-family: 'Consolas', monospace;
+}
+
+/* Step list */
+.ms-step-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    counter-reset: step;
+}
+
+.ms-step-list li {
+    counter-increment: step;
+    position: relative;
+    padding: 12px 0 12px 48px;
+    color: #605e5c;
+    line-height: 1.5;
+    font-size: 15px;
+}
+
+.ms-step-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+    background: #0078d4;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Feature list with checkmarks */
+.ms-feature-list {
+    margin: 16px 0;
+}
+
+.ms-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    color: #605e5c;
+    font-size: 14px;
+}
+
+.ms-feature-check {
+    flex-shrink: 0;
+}
+
+/* Code blocks */
+.ms-code-block {
+    margin: 24px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e1dfdd;
+    background: white;
+}
+
+.ms-code-header {
+    background: #f3f2f1;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e1dfdd;
+    font-size: 13px;
+    font-weight: 500;
+    color: #323130;
+}
+
+.ms-code-block code {
+    display: block;
+    padding: 16px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0;
+}
+
+/* Security features */
+.ms-security-features {
+    display: grid;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.ms-security-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: #f3f2f1;
+    border-radius: 6px;
+    border-left: 4px solid #d83b01;
+}
+
+.ms-security-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.ms-security-feature strong {
+    display: block;
+    color: #323130;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.ms-security-feature p {
+    color: #605e5c;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Preview types */
+.ms-preview-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 32px 0;
+}
+
+.ms-preview-type {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.ms-preview-type:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #0078d4;
+}
+
+.ms-preview-icon {
+    margin-bottom: 16px;
+}
+
+.ms-preview-type h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 8px 0;
+}
+
+.ms-preview-type p {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* API endpoints */
+.ms-api-endpoint {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 24px 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.ms-api-method {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.ms-method-badge {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ms-method-badge.ms-post {
+    background: #107c10;
+    color: white;
+}
+
+.ms-method-badge.ms-get {
+    background: #0078d4;
+    color: white;
+}
+
+.ms-endpoint-url {
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    color: #323130;
+    font-weight: 500;
+}
+
+/* Troubleshooting */
+.ms-troubleshooting {
+    display: grid;
+    gap: 32px;
+    margin: 32px 0;
+}
+
+.ms-trouble-section {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.ms-trouble-section h3 {
+    color: #323130;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+}
+
+.ms-trouble-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ms-trouble-list li {
+    position: relative;
+    padding: 8px 0 8px 24px;
+    color: #605e5c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.ms-trouble-list li::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: #0078d4;
+    font-weight: bold;
+}
+
+/* Support card */
+.ms-support-card {
+    background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    color: white;
+    margin: 48px 0;
+}
+
+.ms-support-card h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: white;
+}
+
+.ms-support-card p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 24px 0;
+    font-size: 15px;
+}
+
+/* =============================================================================
+   Footer Styles
+   ============================================================================= */
+
+.ms-footer {
+    background: #f3f2f1;
+    border-top: 1px solid #e1dfdd;
+    margin-top: 64px;
+}
+
+.ms-footer-content {
+    padding: 64px 0 0 0;
+}
+
+.ms-footer-main {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 64px;
+    margin-bottom: 48px;
+}
+
+.ms-footer-brand {
+    max-width: 400px;
+}
+
+.ms-footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.ms-brand-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #323130;
+}
+
+.ms-footer-description {
+    color: #605e5c;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    font-size: 15px;
+}
+
+.ms-footer-stats {
+    display: flex;
+    gap: 32px;
+}
+
+.ms-stat-item {
+    text-align: left;
+}
+
+.ms-stat-item .ms-stat-number {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0078d4;
+    margin-bottom: 4px;
+}
+
+.ms-stat-item .ms-stat-label {
+    display: block;
+    font-size: 13px;
+    color: #605e5c;
+    font-weight: 500;
+}
+
+.ms-footer-links {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+}
+
+.ms-footer-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.ms-footer-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 16px 0;
+}
+
+.ms-footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ms-footer-list li {
+    margin-bottom: 8px;
+}
+
+.ms-footer-link {
+    color: #605e5c;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.ms-footer-link:hover {
+    color: #0078d4;
+}
+
+/* Trust badges */
+.ms-footer-trust {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.ms-trust-badges {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.ms-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #605e5c;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ms-trust-icon {
+    flex-shrink: 0;
+}
+
+/* Footer bottom */
+.ms-footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+    border-top: 1px solid #e1dfdd;
+}
+
+.ms-footer-bottom-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.ms-copyright {
+    color: #605e5c;
+    font-size: 14px;
+    margin: 0;
+}
+
+.ms-legal-links {
+    display: flex;
+    gap: 16px;
+}
+
+.ms-legal-link {
+    color: #605e5c;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.15s ease;
+}
+
+.ms-legal-link:hover {
+    color: #0078d4;
+}
+
+.ms-footer-bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.ms-social-links {
+    display: flex;
+    gap: 16px;
+}
+
+.ms-social-link {
+    color: #605e5c;
+    transition: color 0.15s ease;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ms-social-link:hover {
+    color: #0078d4;
+    background: #f3f2f1;
+}
+
+.ms-language-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #605e5c;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.ms-language-selector:hover {
+    background: #f3f2f1;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .ms-docs-layout {
+        grid-template-columns: 240px 1fr;
+        gap: 32px;
+    }
+    
+    .ms-footer-main {
+        grid-template-columns: 1fr;
+        gap: 48px;
+    }
+    
+    .ms-footer-links {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ms-enterprise-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .ms-docs-layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .ms-docs-nav {
+        position: relative;
+        top: 0;
+    }
+    
+    .ms-feature-categories,
+    .ms-features-grid,
+    .ms-docs-features,
+    .ms-preview-types {
+        grid-template-columns: 1fr;
+    }
+    
+    .ms-footer-links {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .ms-footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .ms-trust-badges {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .ms-enterprise-section {
+        padding: 32px 24px;
+    }
+    
+    .ms-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .ms-hero {
+        padding: 32px 0;
+    }
+    
+    .ms-hero-title {
+        font-size: 28px;
+    }
+    
+    .ms-container {
+        padding: 0 16px;
+    }
+    
+    .ms-footer-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .ms-trust-badges {
+        grid-template-columns: 1fr;
+    }
+    
+    .ms-footer-bottom-left {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* =============================================================================
+   Website Creation & Management Styles
+   ============================================================================= */
+
+/* Create Website Page */
+.ms-create-website-page {
+    background: #faf9f8;
+    min-height: 100vh;
+    padding: 0 0 80px 0;
+}
+
+.ms-create-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 48px;
+    margin-top: 48px;
+}
+
+.ms-create-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.ms-form-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ms-form-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #f3f2f1;
+}
+
+.ms-form-icon {
+    background: #deecf9;
+    border-radius: 12px;
+    padding: 12px;
+    flex-shrink: 0;
+}
+
+.ms-form-header h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 4px 0;
+}
+
+.ms-form-header p {
+    color: #605e5c;
+    font-size: 14px;
+    margin: 0;
+}
+
+.ms-website-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ms-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ms-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #323130;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ms-optional {
+    font-weight: 400;
+    color: #605e5c;
+    font-size: 13px;
+}
+
+.ms-input {
+    padding: 12px 16px;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #323130;
+    background: white;
+    transition: all 0.15s ease;
+}
+
+.ms-input:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+}
+
+.ms-input::placeholder {
+    color: #a19f9d;
+}
+
+.ms-textarea {
+    padding: 12px 16px;
+    border: 1px solid #8a8886;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #323130;
+    background: white;
+    transition: all 0.15s ease;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.ms-textarea:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 1px #0078d4;
+}
+
+.ms-textarea::placeholder {
+    color: #a19f9d;
+}
+
+.ms-input-help {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.ms-help-text {
+    font-size: 12px;
+    color: #605e5c;
+}
+
+.ms-char-counter {
+    font-size: 12px;
+    color: #605e5c;
+    font-variant-numeric: tabular-nums;
+}
+
+.ms-form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid #f3f2f1;
+}
+
+.ms-btn-large {
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    min-width: 160px;
+}
+
+.ms-btn-small {
+    padding: 6px 16px;
+    font-size: 13px;
+}
+
+/* Sidebar Styles */
+.ms-create-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ms-info-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.ms-info-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 16px 0;
+}
+
+.ms-features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ms-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.ms-feature-icon {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.ms-feature-item strong {
+    font-size: 14px;
+    color: #323130;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.ms-feature-item p {
+    font-size: 13px;
+    color: #605e5c;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Plan Comparison */
+.ms-plan-comparison {
+    display: grid;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.ms-plan {
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.ms-plan:hover {
+    border-color: #0078d4;
+    box-shadow: 0 2px 8px rgba(0, 120, 212, 0.1);
+}
+
+.ms-plan-pro {
+    border-color: #0078d4;
+    background: linear-gradient(135deg, #f8fbff 0%, #f0f8ff 100%);
+}
+
+.ms-plan-badge {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0078d4;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ms-plan-header {
+    margin-bottom: 16px;
+}
+
+.ms-plan-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 8px 0;
+}
+
+.ms-plan-price {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0078d4;
+}
+
+.ms-plan-price span {
+    font-size: 12px;
+    font-weight: 400;
+    color: #605e5c;
+}
+
+.ms-plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+}
+
+.ms-plan-features li {
+    font-size: 13px;
+    color: #323130;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.ms-plan-features li:last-child {
+    margin-bottom: 0;
+}
+
+/* Tips Card */
+.ms-tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ms-tips-list li {
+    font-size: 13px;
+    color: #605e5c;
+    margin-bottom: 8px;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.4;
+}
+
+.ms-tips-list li:before {
+    content: "•";
+    color: #0078d4;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.ms-tips-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Spinner for loading states */
+.ms-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: ms-spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+@keyframes ms-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Website Management Page Updates */
+.ms-manage-website-page {
+    background: #faf9f8;
+    min-height: 100vh;
+    padding: 0 0 80px 0;
+}
+
+.ms-manage-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.ms-manage-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ms-manage-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ms-status-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.ms-status-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ms-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ms-badge-success {
+    background: #dff6dd;
+    color: #107c10;
+    border: 1px solid #c4e5c1;
+}
+
+.ms-badge-warning {
+    background: #fff4ce;
+    color: #ca5010;
+    border: 1px solid #ffdfb3;
+}
+
+.ms-badge-info {
+    background: #deecf9;
+    color: #0078d4;
+    border: 1px solid #b3d6fc;
+}
+
+.ms-badge-secondary {
+    background: #f3f2f1;
+    color: #605e5c;
+    border: 1px solid #e1dfdd;
+}
+
+.ms-upload-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-upload-area {
+    border: 2px dashed #d2d0ce;
+    border-radius: 8px;
+    padding: 48px 24px;
+    text-align: center;
+    background: #faf9f8;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.ms-upload-area:hover,
+.ms-upload-area.dragover {
+    border-color: #0078d4;
+    background: #f8fbff;
+}
+
+.ms-upload-icon {
+    margin-bottom: 16px;
+    color: #605e5c;
+}
+
+.ms-upload-text {
+    color: #323130;
+    margin-bottom: 16px;
+}
+
+.ms-upload-text h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.ms-upload-text p {
+    font-size: 14px;
+    color: #605e5c;
+    margin: 0;
+}
+
+.ms-files-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ms-files-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f2f1;
+}
+
+.ms-files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.ms-file-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #f3f2f1;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.ms-file-item:hover {
+    background: #f9f8f7;
+    border-color: #e1dfdd;
+}
+
+.ms-file-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.ms-file-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.ms-file-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #323130;
+    margin: 0 0 2px 0;
+    word-break: break-all;
+}
+
+.ms-file-path {
+    font-size: 12px;
+    color: #a19f9d;
+    font-family: 'Consolas', monospace;
+}
+
+.ms-file-size {
+    font-size: 12px;
+    color: #605e5c;
+    margin-top: 2px;
+}
+
+.ms-file-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.ms-btn-icon {
+    padding: 8px;
+    border: 1px solid #e1dfdd;
+    border-radius: 4px;
+    background: white;
+    color: #605e5c;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ms-btn-icon:hover {
+    background: #f3f2f1;
+    border-color: #c8c6c4;
+}
+
+.ms-btn-icon.ms-btn-danger {
+    color: #d83b01;
+}
+
+.ms-btn-icon.ms-btn-danger:hover {
+    background: #fdf3f2;
+    border-color: #f1bbba;
+}
+
+.ms-actions-card {
+    background: white;
+    border: 1px solid #e1dfdd;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.ms-actions-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0 0 16px 0;
+}
+
+.ms-actions-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.ms-btn-publish {
+    background: #107c10;
+    color: white;
+    border: 1px solid #107c10;
+}
+
+.ms-btn-publish:hover {
+    background: #0e6e0e;
+    border-color: #0e6e0e;
+}
+
+.ms-btn-unpublish {
+    background: #ca5010;
+    color: white;
+    border: 1px solid #ca5010;
+}
+
+.ms-btn-unpublish:hover {
+    background: #b5460e;
+    border-color: #b5460e;
+}
+
+.ms-btn-delete {
+    background: #d83b01;
+    color: white;
+    border: 1px solid #d83b01;
+}
+
+.ms-btn-delete:hover {
+    background: #c53401;
+    border-color: #c53401;
+}
+
+.ms-website-url {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f3f2f1;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    color: #323130;
+    word-break: break-all;
+}
+
+.ms-copy-btn {
+    background: #0078d4;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: background-color 0.15s ease;
+}
+
+.ms-copy-btn:hover {
+    background: #106ebe;
+}
+
+.ms-empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #a19f9d;
+}
+
+.ms-empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.ms-empty-state h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #605e5c;
+    margin: 0 0 8px 0;
+}
+
+.ms-empty-state p {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .ms-create-layout,
+    .ms-manage-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    
+    .ms-create-sidebar,
+    .ms-manage-sidebar {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .ms-hero {
+        padding: 32px 0;
+        text-align: center;
+    }
+    
+    .ms-form-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .ms-plan-comparison {
+        grid-template-columns: 1fr;
+    }
+    
+    .ms-actions-buttons .ms-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .ms-container {
+        padding: 0 16px;
+    }
+    
+    .ms-form-card,
+    .ms-info-card,
+    .ms-status-card,
+    .ms-upload-card,
+    .ms-files-card,
+    .ms-actions-card {
+        padding: 20px;
+    }
+}
+
+/* Alert Components */
+.ms-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ms-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.ms-alert-success {
+    background: #dff6dd;
+    border: 1px solid #c4e5c1;
+    color: #107c10;
+}
+
+.ms-alert-danger {
+    background: #fdf3f2;
+    border: 1px solid #f1bbba;
+    color: #d83b01;
+}
+
+.ms-alert-warning {
+    background: #fff4ce;
+    border: 1px solid #ffdfb3;
+    color: #ca5010;
+}
+
+.ms-alert-info {
+    background: #deecf9;
+    border: 1px solid #b3d6fc;
+    color: #0078d4;
+}
+
+.ms-alert-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.ms-alert-content {
+    flex: 1;
+}
+
+/* Storage Bar */
+.ms-storage-bar {
+    width: 100%;
+    height: 8px;
+    background: #f3f2f1;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 12px 0 8px 0;
+}
+
+.ms-storage-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0078d4, #106ebe);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    min-width: 2px;
+}
+
+/* Badge variants */
+.ms-badge-small {
+    padding: 2px 8px;
+    font-size: 10px;
+}
+
+/* Preview header */
+.ms-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f3f2f1;
+    margin-bottom: 16px;
+}
+
+.ms-preview-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0;
+}
+
+/* File preview for selected files */
+.ms-file-preview {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #f3f2f1;
+}
+
+/* Unsupported preview */
+.ms-unsupported-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background: #faf9f8;
+}
+
+.ms-unsupported-preview .ms-error-icon {
+    margin-bottom: 20px;
+    opacity: 0.6;
+}
+
+.ms-unsupported-preview h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #605e5c;
+}
+
+.ms-unsupported-preview p {
+    margin: 0;
+    font-size: 14px;
+    color: #a19f9d;
+    max-width: 400px;
+    line-height: 1.4;
+}

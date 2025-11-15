@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Profile - FileLink Pro{% endblock %}
+{% block content %}
+<section class="profile-page">
+    <div class="container">
+        <h1>My Profile</h1>
+        <div class="profile-card">
+            <h2>{{ user.full_name }}</h2>
+            <p>Email: {{ user.email }}</p>
+            <p>Member since: {{ user.created_date.strftime('%B %Y') }}</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

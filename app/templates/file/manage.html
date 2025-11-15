@@ -1,0 +1,1309 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage {{ file.original_filename }} - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="file-manage-page">
+    <div class="container">
+        <div class="file-manage-header">
+            <div class="breadcrumb">
+                <a href="{{ url_for('main.index') }}">Home</a>
+                <span class="separator">></span>
+                <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
+                <span class="separator">></span>
+                <span class="current">{{ file.original_filename }}</span>
+            </div>
+            <h1>{{ file.original_filename }}</h1>
+        </div>
+
+        <div class="file-details-card">
+            <div class="file-preview">
+                {% if file.is_previewable() %}
+                    {% if file.get_preview_type() == 'image' %}
+                        <img src="/r/{{ link.slug }}" alt="{{ file.original_filename }}" class="preview-image">
+                    {% elif file.get_preview_type() == 'video' %}
+                        <video controls class="preview-video">
+                            <source src="/r/{{ link.slug }}" type="{{ file.mime_type }}">
+                        </video>
+                    {% elif file.get_preview_type() == 'audio' %}
+                        <audio controls class="preview-audio">
+                            <source src="/r/{{ link.slug }}" type="{{ file.mime_type }}">
+                        </audio>
+                    {% else %}
+                        <div class="file-icon">
+                            {% if file.get_file_extension() == 'html' %}📄
+                            {% elif file.get_file_extension() == 'css' %}🎨
+                            {% elif file.get_file_extension() == 'js' %}⚡
+                            {% elif file.get_file_extension() == 'pdf' %}📑
+                            {% else %}📁{% endif %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="file-icon">📁</div>
+                {% endif %}
+            </div>
+            
+            <div class="file-info">
+                <h3>File Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>File Name:</label>
+                        <span>{{ file.original_filename }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>File Size:</label>
+                        <span>{{ (file.file_size / 1024)|round(1) }} KB</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Upload Date:</label>
+                        <span>{{ file.upload_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>File Type:</label>
+                        <span>{{ file.mime_type or 'Unknown' }}</span>
+                    </div>
+                    {% if link %}
+                    <div class="info-item">
+                        <label>Share Link:</label>
+                        <div class="link-container">
+                            <input type="text" id="shareUrl" value="{{ request.host_url }}r/{{ link.slug }}" readonly>
+                            <button class="btn btn-sm" onclick="copyShareUrl()">Copy</button>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <label>Views:</label>
+                        <span>{{ link.view_count }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Last Accessed:</label>
+                        <span>{{ link.last_accessed.strftime('%B %d, %Y at %I:%M %p') if link.last_accessed else 'Never' }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="ms-retention-policy-card">
+            <div class="ms-policy-header">
+                <div class="ms-policy-icon">
+                    {% if user.is_premium %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#107c10">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                        </svg>
+                    {% else %}
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#d83b01">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,7H13V13H11V7M11,15H13V17H11V15Z"/>
+                        </svg>
+                    {% endif %}
+                </div>
+                <div class="ms-policy-title">
+                    <h3>📋 File Retention Policy</h3>
+                    <span class="ms-plan-badge ms-plan-{{ 'pro' if user.is_premium else 'free' }}">
+                        {{ 'Pro Plan' if user.is_premium else 'Free Plan' }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="ms-policy-content">
+                <div class="ms-policy-message">
+                    <p class="ms-policy-text">{{ deletion_policy }}</p>
+                </div>
+                
+                {% if not user.is_premium %}
+                <div class="ms-upgrade-section">
+                    <div class="ms-upgrade-content">
+                        <div class="ms-upgrade-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0078d4">
+                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-upgrade-text">
+                            <strong>Upgrade to Pro</strong> for extended file retention, increased storage, and premium features!
+                        </div>
+                    </div>
+                    <button onclick="window.open('#upgrade', '_blank')" class="ms-upgrade-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7,13H11V17H13V13H17L12,8L7,13Z"/>
+                        </svg>
+                        Upgrade to Pro
+                    </button>
+                </div>
+                {% else %}
+                <div class="ms-pro-benefits">
+                    <div class="ms-benefit-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                        </svg>
+                        <span>Extended 365-day retention</span>
+                    </div>
+                    <div class="ms-benefit-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                        </svg>
+                        <span>Increased storage capacity</span>
+                    </div>
+                    <div class="ms-benefit-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#107c10">
+                            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                        </svg>
+                        <span>Priority support</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="link-settings-card">
+            <h3>🔒 Link Settings</h3>
+            <p style="color: #6B7280; font-size: 14px; margin-bottom: 1.5rem;">Control access to your shared link with password protection and expiry settings.</p>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="margin-bottom: 1rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="{{ url_for('auth.update_link_settings', file_id=file.id) }}" class="link-settings-form">
+                <div class="settings-section">
+                    <div class="setting-header">
+                        <h4>Password Protection</h4>
+                        {% if link.password_hash %}
+                            <span class="status-badge active">✓ Active</span>
+                        {% else %}
+                            <span class="status-badge inactive">○ Not Set</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Set or Update Password:</label>
+                        <input type="password" id="password" name="password" class="form-control" 
+                               placeholder="Enter a password to protect this link">
+                        <small class="form-help">Leave empty to keep current password</small>
+                    </div>
+                    
+                    {% if link.password_hash %}
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="remove_password" value="on">
+                            <span>Remove password protection</span>
+                        </label>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="settings-section">
+                    <div class="setting-header">
+                        <h4>Link Expiry</h4>
+                        {% if link.expiry_date %}
+                            <span class="status-badge active">Expires {{ link.expiry_date.strftime('%B %d, %Y') }}</span>
+                        {% else %}
+                            <span class="status-badge inactive">Never Expires</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="expiry_days">Set Expiry (days):</label>
+                        <select id="expiry_days" name="expiry_days" class="form-control">
+                            <option value="">Keep current</option>
+                            <option value="0">Never expire</option>
+                            <option value="1">1 day</option>
+                            <option value="7">7 days</option>
+                            <option value="30">30 days</option>
+                            <option value="90">90 days</option>
+                            <option value="365">1 year</option>
+                        </select>
+                        <small class="form-help">Choose when this link should stop working</small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="file-actions-card">
+            <h3>File Actions</h3>
+            <div class="actions-grid">
+                <a href="/r/{{ link.slug }}" target="_blank" class="action-btn view-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    View File
+                </a>
+                
+                <a href="/r/{{ link.slug }}?download=1" class="action-btn download-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download
+                </a>
+
+                <button onclick="showDeleteConfirmation()" class="action-btn delete-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Delete File
+                </button>
+                
+                <a href="{{ url_for('auth.dashboard') }}" class="action-btn back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12,19 5,12 12,5"></polyline>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Microsoft-Style Delete Confirmation Modal -->
+<div id="deleteModal" class="ms-delete-modal">
+    <div class="ms-delete-overlay"></div>
+    <div class="ms-delete-content">
+        <div class="ms-delete-header">
+            <div class="ms-delete-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#d83b01">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,7H13V13H11V7M11,15H13V17H11V15Z"/>
+                </svg>
+            </div>
+            <div class="ms-delete-title">
+                <h3>🗑️ Delete File</h3>
+                <button class="ms-delete-close" onclick="hideDeleteConfirmation()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="ms-delete-body">
+            <div class="ms-warning-message">
+                <h4>Are you sure you want to delete "{{ file.original_filename }}"?</h4>
+                <p class="ms-warning-text">This action cannot be undone. The file and its share link will be permanently deleted from our servers.</p>
+            </div>
+            
+            <div class="ms-file-summary">
+                <h5>📄 File Details</h5>
+                <div class="ms-summary-grid">
+                    <div class="ms-summary-item">
+                        <div class="ms-summary-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#605e5c">
+                                <path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-summary-content">
+                            <span class="ms-summary-label">File Size</span>
+                            <span class="ms-summary-value">{{ (file.file_size / 1024)|round(1) }} KB</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-summary-item">
+                        <div class="ms-summary-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#605e5c">
+                                <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-summary-content">
+                            <span class="ms-summary-label">Total Views</span>
+                            <span class="ms-summary-value">{{ link.view_count if link else 0 }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-summary-item">
+                        <div class="ms-summary-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#605e5c">
+                                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M16.5,16H7.5V14.5H16.5V16M19,12H5V10.5H19V12M16.5,8H7.5V6.5H16.5V8Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-summary-content">
+                            <span class="ms-summary-label">Upload Date</span>
+                            <span class="ms-summary-value">{{ file.upload_date.strftime('%B %d, %Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ms-warning-footer">
+                    <div class="ms-warning-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#ca5010">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <span class="ms-warning-final">This action is irreversible and will permanently remove all associated data.</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ms-delete-footer">
+            <button onclick="hideDeleteConfirmation()" class="ms-btn-cancel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                </svg>
+                Cancel
+            </button>
+            <form method="POST" action="{{ url_for('auth.delete_file', file_id=file.id) }}" style="display: inline;">
+                <button type="submit" class="ms-btn-delete">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"/>
+                    </svg>
+                    Delete Permanently
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.file-manage-page {
+    padding: 40px 0;
+    background: #F7F9FB;
+    min-height: 100vh;
+}
+
+.file-manage-header {
+    margin-bottom: 2rem;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: #0078d4;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.separator {
+    color: #6B7280;
+}
+
+.current {
+    color: #374151;
+    font-weight: 500;
+}
+
+.file-manage-header h1 {
+    font-size: 32px;
+    color: #0B2545;
+    margin: 0;
+}
+
+.file-details-card, .ms-retention-policy-card, .file-actions-card, .link-settings-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e5e9;
+    transition: box-shadow 0.2s ease;
+}
+
+.file-details-card:hover, .ms-retention-policy-card:hover, .file-actions-card:hover, .link-settings-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Link Settings Form Styles */
+.link-settings-card h3 {
+    color: #0B2545;
+    margin-bottom: 0.5rem;
+}
+
+.link-settings-form {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.settings-section {
+    padding: 1.5rem;
+    background: #F7F9FB;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+}
+
+.setting-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.setting-header h4 {
+    color: #374151;
+    font-size: 16px;
+    margin: 0;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-badge.inactive {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #0078d4;
+    box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+}
+
+.form-help {
+    display: block;
+    color: #6B7280;
+    font-size: 12px;
+    margin-top: 0.25rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    color: #374151;
+    font-size: 14px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: #106ebe;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+}
+
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background: #D1FAE5;
+    border: 1px solid #A7F3D0;
+    color: #065F46;
+}
+
+.alert-danger {
+    background: #FEE2E2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+}
+
+.file-details-card {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+}
+
+.file-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F7F9FB;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 200px;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px;
+}
+
+.preview-video, .preview-audio {
+    max-width: 100%;
+}
+
+.file-icon {
+    font-size: 64px;
+}
+
+.file-info h3 {
+    color: #0B2545;
+    margin-bottom: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item label {
+    font-weight: 500;
+    color: #374151;
+    min-width: 120px;
+}
+
+.link-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.link-container input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #F9FAFB;
+}
+
+.policy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.policy-header h3 {
+    color: #0B2545;
+    margin: 0;
+}
+
+.plan-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pro-plan {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.free-plan {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.policy-content {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.policy-text p {
+    margin-bottom: 1rem;
+    color: #374151;
+    line-height: 1.6;
+}
+
+.upgrade-note {
+    background: #FEF3C7;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #F59E0B;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.view-btn {
+    background: #0078d4;
+    color: white;
+}
+
+.view-btn:hover {
+    background: #106ebe;
+    transform: translateY(-1px);
+}
+
+.download-btn {
+    background: #107c10;
+    color: white;
+}
+
+.download-btn:hover {
+    background: #0e6b0e;
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    background: #d83b01;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #c33401;
+    transform: translateY(-1px);
+}
+
+.back-btn {
+    background: #6B7280;
+    color: white;
+}
+
+.back-btn:hover {
+    background: #4B5563;
+    transform: translateY(-1px);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #0B2545;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6B7280;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.file-summary {
+    background: #F7F9FB;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* Microsoft-Style Retention Policy */
+.ms-retention-policy-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-left: 4px solid #0078d4;
+}
+
+.ms-policy-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.ms-policy-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 120, 212, 0.1);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ms-policy-title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ms-policy-title h3 {
+    color: #323130;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.ms-plan-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ms-plan-free {
+    background: linear-gradient(135deg, #fff4e6, #ffedd5);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.ms-plan-pro {
+    background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+    color: #1e40af;
+    border: 1px solid #60a5fa;
+}
+
+.ms-policy-content {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.ms-policy-message {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 1px solid #e1e5e9;
+}
+
+.ms-policy-text {
+    color: #323130;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ms-upgrade-section {
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 1.25rem;
+}
+
+.ms-upgrade-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.ms-upgrade-icon {
+    flex-shrink: 0;
+}
+
+.ms-upgrade-text {
+    color: #323130;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.ms-upgrade-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #0078d4, #106ebe);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ms-upgrade-btn:hover {
+    background: linear-gradient(135deg, #106ebe, #005a9e);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 110, 190, 0.4);
+}
+
+.ms-pro-benefits {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.ms-benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 14px;
+    color: #16a34a;
+    font-weight: 500;
+}
+
+/* Microsoft-Style Delete Modal */
+.ms-delete-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.ms-delete-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.ms-delete-content {
+    position: relative;
+    background: white;
+    margin: 8% auto;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    animation: slideInUp 0.3s ease;
+    overflow: hidden;
+}
+
+.ms-delete-header {
+    background: linear-gradient(135deg, #fef2f2, #fef7f7);
+    border-bottom: 1px solid #fecaca;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ms-delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(216, 59, 1, 0.1);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ms-delete-title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ms-delete-title h3 {
+    color: #991b1b;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.ms-delete-close {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.ms-delete-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.ms-delete-body {
+    padding: 2rem;
+}
+
+.ms-warning-message {
+    margin-bottom: 2rem;
+}
+
+.ms-warning-message h4 {
+    color: #991b1b;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}
+
+.ms-warning-text {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ms-file-summary {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.ms-file-summary h5 {
+    color: #374151;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+}
+
+.ms-summary-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ms-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.ms-summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ms-summary-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ms-summary-label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ms-summary-value {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ms-warning-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #fef7f0, #fef3e8);
+    border: 1px solid #fed7aa;
+    border-radius: 6px;
+}
+
+.ms-warning-icon {
+    flex-shrink: 0;
+}
+
+.ms-warning-final {
+    color: #ea580c;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.ms-delete-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e5e7eb;
+    padding: 1.5rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.ms-btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ms-btn-cancel:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+    color: #1f2937;
+    transform: translateY(-1px);
+}
+
+.ms-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ms-btn-delete:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    .file-details-card {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ms-policy-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .ms-policy-title {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .ms-upgrade-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .ms-delete-content {
+        margin: 5% 1rem;
+        max-width: none;
+    }
+    
+    .ms-delete-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .ms-delete-body {
+        padding: 1.5rem;
+    }
+    
+    .ms-delete-footer {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+    }
+    
+    .ms-btn-cancel, .ms-btn-delete {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+function copyShareUrl() {
+    const input = document.getElementById('shareUrl');
+    input.select();
+    document.execCommand('copy');
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 2000);
+}
+
+function showDeleteConfirmation() {
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+function hideDeleteConfirmation() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

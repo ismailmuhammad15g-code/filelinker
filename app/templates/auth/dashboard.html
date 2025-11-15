@@ -1,0 +1,867 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="dashboard-page">
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Welcome, {{ user.full_name }}!</h1>
+            <div class="dashboard-actions">
+                <a href="{{ url_for('upload.upload_page') }}" class="btn btn-primary">Upload File</a>
+                <a href="{{ url_for('website.create_website') }}" class="btn btn-primary">Create Website</a>
+                <a href="{{ url_for('auth.profile') }}" class="btn btn-secondary">Profile</a>
+                {% if user.is_admin %}
+                <a href="{{ url_for('auth.admin_panel') }}" class="btn btn-warning">Admin Panel</a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Storage Usage -->
+        <div class="storage-card">
+            <h2>Storage Usage</h2>
+            <div class="storage-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ storage_percentage }}%"></div>
+                </div>
+                <p class="storage-text">
+                    {{ (used_storage / 1024 / 1024)|round(2) }} MB / {{ (total_storage / 1024 / 1024)|round(0)|int }} MB used
+                    ({{ storage_percentage|round(1) }}%)
+                </p>
+            </div>
+        </div>
+        
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Recent Files -->
+            <div class="dashboard-card">
+                <h2>Recent Files</h2>
+                {% if user_files %}
+                <div class="file-list">
+                    {% for file, link in user_files %}
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">{{ file.original_filename }}</span>
+                            <span class="file-size">{{ (file.file_size / 1024)|round(1) }} KB</span>
+                        </div>
+                        <div class="file-actions">
+                            <a href="/r/{{ link.slug }}" class="btn-small" target="_blank">View</a>
+                            <button onclick="copyLink('/r/{{ link.slug }}')" class="btn-small">Copy Link</button>
+                            <a href="{{ url_for('auth.manage_file', file_id=file.id) }}" class="btn-small btn-manage">Manage</a>
+                            <button onclick="showDeleteModal({{ file.id }}, '{{ file.original_filename }}', {{ file.file_size }}, {{ link.view_count }})" class="btn-small btn-delete">Delete</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-state">No files uploaded yet</p>
+                {% endif %}
+                <a href="{{ url_for('upload.upload_page') }}" class="btn btn-outline btn-block">Upload More Files</a>
+            </div>
+            
+            <!-- My Websites -->
+            <div class="dashboard-card">
+                <h2>My Websites</h2>
+                {% if user_websites %}
+                <div class="website-list">
+                    {% for website in user_websites %}
+                    <div class="website-item">
+                        <div class="website-info">
+                            <span class="website-name">{{ website.name }}</span>
+                            <span class="website-status">
+                                {% if website.is_published %}
+                                <span class="badge badge-success">Published</span>
+                                {% else %}
+                                <span class="badge badge-warning">Draft</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="website-actions">
+                            {% if website.is_published %}
+                            <a href="/site/{{ website.slug }}" class="btn-small" target="_blank">View</a>
+                            {% endif %}
+                            <a href="{{ url_for('website.manage_website', website_id=website.id) }}" class="btn-small">Manage</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-state">No websites created yet</p>
+                {% endif %}
+                <a href="{{ url_for('website.create_website') }}" class="btn btn-outline btn-block">Create New Website</a>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Files</h3>
+                <p class="stat-value">{{ user_files|length }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Websites</h3>
+                <p class="stat-value">{{ user_websites|length }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Views</h3>
+                <p class="stat-value">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Member Since</h3>
+                <p class="stat-value">{{ user.created_date.strftime('%b %Y') }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Microsoft-Style Delete Confirmation Modal -->
+<div id="deleteModal" class="ms-delete-modal">
+    <div class="ms-delete-overlay"></div>
+    <div class="ms-delete-content">
+        <div class="ms-delete-header">
+            <div class="ms-delete-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#d83b01">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,7H13V13H11V7M11,15H13V17H11V15Z"/>
+                </svg>
+            </div>
+            <div class="ms-delete-title">
+                <h3>🗑️ Delete File</h3>
+                <button class="ms-delete-close" onclick="hideDeleteModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="ms-delete-body">
+            <div class="ms-warning-message">
+                <h4>Are you sure you want to delete "<span id="deleteFileName"></span>"?</h4>
+                <p class="ms-warning-text">This action cannot be undone. The file and its share link will be permanently deleted from our servers.</p>
+            </div>
+            
+            <div class="ms-file-summary">
+                <h5>📄 File Details</h5>
+                <div class="ms-summary-grid">
+                    <div class="ms-summary-item">
+                        <div class="ms-summary-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#605e5c">
+                                <path d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-summary-content">
+                            <span class="ms-summary-label">File Size</span>
+                            <span class="ms-summary-value" id="deleteFileSize"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-summary-item">
+                        <div class="ms-summary-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#605e5c">
+                                <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-summary-content">
+                            <span class="ms-summary-label">Total Views</span>
+                            <span class="ms-summary-value" id="deleteFileViews"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-summary-item">
+                        <div class="ms-summary-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#605e5c">
+                                <path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                            </svg>
+                        </div>
+                        <div class="ms-summary-content">
+                            <span class="ms-summary-label">Retention Policy</span>
+                            <span class="ms-summary-value">{{ '365 days (Pro)' if user.is_premium else '30 days (Free)' }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ms-warning-footer">
+                    <div class="ms-warning-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#ca5010">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <span class="ms-warning-final">This action is irreversible and will permanently remove all associated data.</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="ms-delete-footer">
+            <button onclick="hideDeleteModal()" class="ms-btn-cancel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                </svg>
+                Cancel
+            </button>
+            <form method="POST" action="" id="deleteForm" style="display: inline;">
+                <button type="submit" class="ms-btn-delete">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"/>
+                    </svg>
+                    Delete Permanently
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-page {
+    padding: 40px 0;
+    min-height: 80vh;
+    background: #F7F9FB;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.dashboard-header h1 {
+    color: #0B2545;
+    font-size: 32px;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.storage-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.storage-progress {
+    margin-top: 1rem;
+}
+
+.progress-bar {
+    height: 20px;
+    background: #E5E7EB;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0D6EFD 0%, #0B2545 100%);
+    transition: width 0.3s;
+}
+
+.storage-text {
+    margin-top: 1rem;
+    color: #6B7280;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card h2 {
+    font-size: 20px;
+    margin-bottom: 1.5rem;
+    color: #0B2545;
+}
+
+.file-list, .website-list {
+    margin-bottom: 1.5rem;
+}
+
+.file-item, .website-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #F7F9FB;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.file-info, .website-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.file-name, .website-name {
+    font-weight: 500;
+    color: #0B2545;
+}
+
+.file-size {
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.file-actions, .website-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-small {
+    padding: 0.25rem 0.75rem;
+    font-size: 14px;
+    background: #0D6EFD;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-warning {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.empty-state {
+    text-align: center;
+    color: #6B7280;
+    padding: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #6B7280;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0B2545;
+}
+
+.btn-warning {
+    background: #F59E0B;
+    color: white;
+}
+
+.btn-manage {
+    background: #0078d4 !important;
+    color: white !important;
+}
+
+.btn-manage:hover {
+    background: #106ebe !important;
+}
+
+.btn-delete {
+    background: #d83b01 !important;
+    color: white !important;
+}
+
+.btn-delete:hover {
+    background: #c33401 !important;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    background: #F7F9FB;
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #0B2545;
+    font-size: 18px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6B7280;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #E5E7EB;
+    color: #374151;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.file-summary {
+    background: #F7F9FB;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+}
+
+.summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.summary-item span:first-child {
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.summary-item span:last-child {
+    color: #0B2545;
+    font-weight: 600;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    background: #FAFAFA;
+    border-radius: 0 0 12px 12px;
+}
+
+.btn-secondary {
+    background: #6B7280;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #4B5563;
+}
+
+.btn-danger {
+    background: #d83b01;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-danger:hover {
+    background: #c33401;
+}
+
+/* Microsoft-Style Delete Modal */
+.ms-delete-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+}
+
+.ms-delete-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.ms-delete-content {
+    position: relative;
+    background: white;
+    margin: 8% auto;
+    max-width: 500px;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    animation: slideInUp 0.3s ease;
+    overflow: hidden;
+}
+
+.ms-delete-header {
+    background: linear-gradient(135deg, #fef2f2, #fef7f7);
+    border-bottom: 1px solid #fecaca;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ms-delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(216, 59, 1, 0.1);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ms-delete-title {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ms-delete-title h3 {
+    color: #991b1b;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.ms-delete-close {
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.ms-delete-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.ms-delete-body {
+    padding: 2rem;
+}
+
+.ms-warning-message {
+    margin-bottom: 2rem;
+}
+
+.ms-warning-message h4 {
+    color: #991b1b;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}
+
+.ms-warning-text {
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ms-file-summary {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.ms-file-summary h5 {
+    color: #374151;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+}
+
+.ms-summary-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ms-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.ms-summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ms-summary-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ms-summary-label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ms-summary-value {
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ms-warning-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #fef7f0, #fef3e8);
+    border: 1px solid #fed7aa;
+    border-radius: 6px;
+}
+
+.ms-warning-icon {
+    flex-shrink: 0;
+}
+
+.ms-warning-final {
+    color: #ea580c;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.ms-delete-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e5e7eb;
+    padding: 1.5rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.ms-btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ms-btn-cancel:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+    color: #1f2937;
+    transform: translateY(-1px);
+}
+
+.ms-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ms-btn-delete:hover {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+
+<script>
+function copyLink(link) {
+    const fullLink = window.location.origin + link;
+    navigator.clipboard.writeText(fullLink).then(() => {
+        event.target.textContent = 'Copied!';
+        setTimeout(() => {
+            event.target.textContent = 'Copy Link';
+        }, 2000);
+    });
+}
+
+function showDeleteModal(fileId, fileName, fileSize, viewCount) {
+    document.getElementById('deleteFileName').textContent = fileName;
+    document.getElementById('deleteFileSize').textContent = (fileSize / 1024).toFixed(1) + ' KB';
+    document.getElementById('deleteFileViews').textContent = viewCount;
+    document.getElementById('deleteForm').action = '/auth/file/' + fileId + '/delete';
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+function hideDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        hideDeleteModal();
+    }
+});
+</script>
+{% endblock %}

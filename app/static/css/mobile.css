@@ -1,0 +1,441 @@
+/* Mobile Responsive Styles for FileLink Pro */
+
+/* Tablets and below (768px) */
+@media (max-width: 768px) {
+    /* Global */
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+    
+    /* Navbar */
+    nav {
+        padding: 0.75rem 1rem;
+    }
+    
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        z-index: 1000;
+    }
+    
+    .nav-links.active {
+        display: flex;
+    }
+    
+    .nav-links a, .nav-links .btn {
+        margin: 0.5rem 0;
+        text-align: center;
+    }
+    
+    /* Hero Section */
+    .hero {
+        padding: 3rem 0;
+        min-height: auto;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    /* Upload Page */
+    .ms-upload-layout {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+    
+    .ms-drop-box {
+        min-height: 250px;
+    }
+    
+    .ms-upload-gif {
+        width: 100px !important;
+        height: 100px !important;
+    }
+    
+    /* Dashboard */
+    .dashboard-stats {
+        grid-template-columns: 1fr !important;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.75rem;
+    }
+    
+    .files-grid, .websites-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .file-card, .website-card {
+        padding: 1rem;
+    }
+    
+    /* File Management */
+    .file-details-card {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .file-preview {
+        min-height: 200px;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Website Management */
+    .website-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .website-status {
+        flex-wrap: wrap;
+    }
+    
+    .website-files-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Forms */
+    .form-row {
+        flex-direction: column;
+    }
+    
+    .form-group {
+        width: 100%;
+    }
+    
+    /* Modals */
+    .modal-content {
+        width: 95% !important;
+        margin: 10% auto;
+    }
+    
+    .ms-delete-content {
+        margin: 5% 1rem !important;
+    }
+    
+    /* Buttons */
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-group .btn {
+        margin: 0;
+    }
+    
+    /* Tables */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    table {
+        font-size: 13px;
+    }
+    
+    /* Storage Bar */
+    .storage-card {
+        padding: 1rem;
+    }
+    
+    .storage-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    /* Feature Cards */
+    .features-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    /* Footer */
+    .footer-content {
+        grid-template-columns: 1fr !important;
+        text-align: center;
+    }
+    
+    .footer-section {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Mobile phones (480px and below) */
+@media (max-width: 480px) {
+    /* Global */
+    body {
+        font-size: 13px;
+    }
+    
+    .container {
+        padding: 0 0.75rem;
+    }
+    
+    /* Typography */
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+    
+    h4 {
+        font-size: 1.1rem;
+    }
+    
+    /* Hero */
+    .hero h1 {
+        font-size: 1.75rem;
+    }
+    
+    .hero p {
+        font-size: 0.9rem;
+    }
+    
+    .hero .btn {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+    }
+    
+    /* Cards */
+    .stat-card, .file-card, .website-card {
+        padding: 1rem;
+    }
+    
+    /* Upload */
+    .ms-drop-box {
+        min-height: 200px;
+        padding: 1rem;
+    }
+    
+    .ms-drop-title {
+        font-size: 1.1rem;
+    }
+    
+    .ms-upload-gif {
+        width: 80px !important;
+        height: 80px !important;
+    }
+    
+    /* Dashboard */
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-card p {
+        font-size: 0.85rem;
+    }
+    
+    /* File/Website Cards */
+    .file-name, .website-name {
+        font-size: 0.95rem;
+    }
+    
+    .file-size, .website-url {
+        font-size: 0.8rem;
+    }
+    
+    /* Forms */
+    .form-control, .form-input {
+        font-size: 14px;
+        padding: 0.65rem;
+    }
+    
+    .btn {
+        font-size: 14px;
+        padding: 0.65rem 1.25rem;
+    }
+    
+    /* Modals */
+    .modal-content {
+        width: 98% !important;
+        margin: 5% auto;
+    }
+    
+    .modal-header, .modal-body, .modal-footer {
+        padding: 1rem;
+    }
+    
+    /* Navigation */
+    .nav-brand {
+        font-size: 1.1rem;
+    }
+    
+    .nav-links a {
+        font-size: 0.9rem;
+        padding: 0.65rem 1rem;
+    }
+    
+    /* Storage */
+    .storage-bar {
+        height: 8px;
+    }
+    
+    .storage-text {
+        font-size: 0.8rem;
+    }
+    
+    /* Settings Sections */
+    .settings-section {
+        padding: 1rem;
+    }
+    
+    .setting-header h4 {
+        font-size: 0.95rem;
+    }
+    
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+    }
+    
+    /* Success/Error Messages */
+    .alert {
+        font-size: 0.85rem;
+        padding: 0.65rem;
+    }
+    
+    /* Website Files Grid */
+    .file-item {
+        padding: 0.75rem;
+    }
+    
+    .file-icon {
+        font-size: 1.75rem;
+    }
+    
+    /* Link Settings */
+    .link-settings-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .form-help {
+        font-size: 0.75rem;
+    }
+    
+    /* Action Buttons */
+    .action-btn {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+    
+    /* Profile */
+    .profile-card {
+        padding: 1rem;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    /* Admin Panel */
+    .admin-stats {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .admin-table {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+    
+    .ms-upload-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger tap targets for touch devices */
+    .btn, button, a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    input[type="checkbox"],
+    input[type="radio"] {
+        width: 22px;
+        height: 22px;
+    }
+    
+    select, input, textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+}
+
+/* Extra small devices (320px and below) */
+@media (max-width: 320px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    .btn {
+        font-size: 13px;
+        padding: 0.6rem 1rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.25rem;
+    }
+}

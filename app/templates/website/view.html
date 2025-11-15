@@ -1,0 +1,434 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ website.name }} - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="view-website-page">
+    {% if has_index %}
+        <!-- Display website in iframe if index.html exists -->
+        <div class="website-viewer">
+            <div class="viewer-header">
+                <div class="viewer-info">
+                    <h1>{{ website.name }}</h1>
+                    {% if website.description %}
+                        <p>{{ website.description }}</p>
+                    {% endif %}
+                </div>
+                <div class="viewer-actions">
+                    <button onclick="toggleFullscreen()" class="btn btn-secondary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                        </svg>
+                        Fullscreen
+                    </button>
+                    <button onclick="openInNewTab()" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        Open in New Tab
+                    </button>
+                </div>
+            </div>
+            <div class="iframe-container" id="iframeContainer">
+                <iframe src="/site/{{ website.slug }}?preview=1" 
+                        id="websiteFrame"
+                        title="{{ website.name }}"
+                        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                        loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    {% else %}
+        <!-- Fallback: Display file listing if no index.html -->
+        <div class="container">
+            <div class="no-index-page">
+                <div class="page-header">
+                    <h1>{{ website.name }}</h1>
+                    {% if website.description %}
+                        <p>{{ website.description }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="alert alert-info">
+                    <div class="alert-icon">ℹ️</div>
+                    <div class="alert-content">
+                        This website doesn't have an index.html file. Browse available files below.
+                    </div>
+                </div>
+                
+                <div class="files-grid">
+                    <h2>Available Files</h2>
+                    {% if files %}
+                        <div class="file-gallery">
+                            {% for file in files %}
+                                <div class="file-card">
+                                    <div class="file-preview">
+                                        {% if file.filename.endswith(('.jpg', '.jpeg', '.png', '.gif', '.svg')) %}
+                                            <img src="/site/{{ website.slug }}/assets/{{ file.filename }}" 
+                                                 alt="{{ file.filename }}"
+                                                 loading="lazy">
+                                        {% elif file.filename.endswith(('.mp4', '.webm')) %}
+                                            <video controls>
+                                                <source src="/site/{{ website.slug }}/assets/{{ file.filename }}">
+                                            </video>
+                                        {% elif file.filename.endswith('.pdf') %}
+                                            <div class="file-type-icon">📑</div>
+                                        {% elif file.filename.endswith('.html') %}
+                                            <div class="file-type-icon">📄</div>
+                                        {% elif file.filename.endswith('.css') %}
+                                            <div class="file-type-icon">🎨</div>
+                                        {% elif file.filename.endswith('.js') %}
+                                            <div class="file-type-icon">⚡</div>
+                                        {% else %}
+                                            <div class="file-type-icon">📁</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="file-info">
+                                        <span class="file-name">{{ file.filename }}</span>
+                                        <span class="file-size">{{ (file.size / 1024)|round(1) }} KB</span>
+                                        <div class="file-actions">
+                                            <a href="/site/{{ website.slug }}/assets/{{ file.filename }}" 
+                                               target="_blank" class="btn btn-sm btn-primary">
+                                                View
+                                            </a>
+                                            <a href="/site/{{ website.slug }}/assets/{{ file.filename }}?download=true" 
+                                               class="btn btn-sm btn-secondary">
+                                                Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No files available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Website Footer Info - Only show for file listings, not for actual website -->
+    {% if not has_index %}
+    <div class="website-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <span>Published by {{ website.owner.username }}</span>
+                    <span class="separator">•</span>
+                    <span>Created {{ website.created_date.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="footer-right">
+                    <a href="{{ url_for('main.index') }}" class="powered-by">
+                        Powered by FileLink Pro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.view-website-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.website-viewer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.viewer-header {
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.viewer-info h1 {
+    font-size: 24px;
+    color: #0B2545;
+    margin: 0;
+}
+
+.viewer-info p {
+    color: #6B7280;
+    margin: 0.25rem 0 0 0;
+}
+
+.viewer-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.viewer-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+}
+
+.iframe-container {
+    flex: 1;
+    position: relative;
+    background: #F3F4F6;
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.iframe-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+}
+
+.no-index-page {
+    padding: 3rem 0;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 36px;
+    color: #0B2545;
+    margin-bottom: 0.5rem;
+}
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.alert-icon {
+    font-size: 20px;
+    margin-right: 1rem;
+}
+
+.alert-info {
+    border-left: 4px solid #3B82F6;
+}
+
+.files-grid {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.files-grid h2 {
+    font-size: 24px;
+    color: #0B2545;
+    margin-bottom: 1.5rem;
+}
+
+.file-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.file-card {
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.file-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.file-preview {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.file-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+}
+
+.file-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.file-type-icon {
+    font-size: 48px;
+}
+
+.file-info {
+    padding: 1rem;
+}
+
+.file-name {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size {
+    display: block;
+    font-size: 12px;
+    color: #9CA3AF;
+    margin-bottom: 0.75rem;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 14px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #9CA3AF;
+}
+
+.website-footer {
+    background: #1F2937;
+    color: white;
+    padding: 1rem 0;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 14px;
+    color: #9CA3AF;
+}
+
+.separator {
+    color: #4B5563;
+}
+
+.powered-by {
+    color: #9CA3AF;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.powered-by:hover {
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .viewer-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .viewer-actions {
+        width: 100%;
+    }
+    
+    .viewer-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .file-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+function toggleFullscreen() {
+    const container = document.getElementById('iframeContainer');
+    container.classList.toggle('fullscreen');
+    
+    if (container.classList.contains('fullscreen')) {
+        event.target.closest('button').innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+            </svg>
+            Exit Fullscreen
+        `;
+    } else {
+        event.target.closest('button').innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+            Fullscreen
+        `;
+    }
+}
+
+function openInNewTab() {
+    window.open('/site/{{ website.slug }}?direct=1', '_blank');
+}
+
+// Handle escape key for fullscreen
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const container = document.getElementById('iframeContainer');
+        if (container && container.classList.contains('fullscreen')) {
+            toggleFullscreen();
+        }
+    }
+});
+</script>
+{% endblock %}

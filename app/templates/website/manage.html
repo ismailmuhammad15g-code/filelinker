@@ -1,0 +1,1187 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage {{ website.name }} - FileLink Pro{% endblock %}
+
+{% block content %}
+<div class="ms-manage-website-page">
+    <div class="ms-container">
+        <!-- Hero Section -->
+        <div class="ms-hero">
+            <div class="ms-breadcrumb">
+                <a href="/">Home</a>
+                <span class="ms-separator">></span>
+                <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
+                <span class="ms-separator">></span>
+                <span class="ms-current">{{ website.name }}</span>
+            </div>
+            <h1 class="ms-hero-title">{{ website.name }}</h1>
+            <p class="ms-hero-subtitle">{{ website.description or "Manage your website files, settings, and publishing status" }}</p>
+            
+            <div class="ms-status-badges">
+                {% if website.is_published %}
+                    <span class="ms-badge ms-badge-success">Published</span>
+                {% else %}
+                    <span class="ms-badge ms-badge-warning">Draft</span>
+                {% endif %}
+                
+                {% if website.password_hash %}
+                    <span class="ms-badge ms-badge-info">Password Protected</span>
+                {% endif %}
+                
+                {% if website.is_public %}
+                    <span class="ms-badge ms-badge-info">Public</span>
+                {% else %}
+                    <span class="ms-badge ms-badge-secondary">Private</span>
+                {% endif %}
+                
+                {% if user.is_premium %}
+                    <span class="ms-badge ms-badge-success">Pro</span>
+                {% else %}
+                    <span class="ms-badge ms-badge-secondary">Free</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="ms-alerts">
+                    {% for category, message in messages %}
+                        <div class="ms-alert ms-alert-{{ category }}">
+                            <div class="ms-alert-icon">
+                                {% if category == 'success' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#107c10">
+                                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                    </svg>
+                                {% elif category == 'danger' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#d83b01">
+                                        <path d="M13 13H11V7H13M13 17H11V15H13M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2Z"/>
+                                    </svg>
+                                {% elif category == 'warning' %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ca5010">
+                                        <path d="M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z"/>
+                                    </svg>
+                                {% else %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#0078d4">
+                                        <path d="M13 9H11V7H13M13 17H11V11H13M12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12A10 10 0 0 0 12 2Z"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="ms-alert-content">{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Website URL Section (if published) -->
+        {% if website.is_published %}
+            <div class="ms-status-card">
+                <div class="ms-status-header">
+                    <h3>🌐 Your Website is Live!</h3>
+                    <a href="/site/{{ website.slug }}" target="_blank" class="ms-btn ms-btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15,3 21,3 21,9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        Visit Site
+                    </a>
+                </div>
+                <div class="ms-website-url">
+                    <input type="text" id="websiteUrl" value="{{ request.host_url }}site/{{ website.slug }}" readonly>
+                    <button class="ms-copy-btn" onclick="copyWebsiteUrl()">Copy</button>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="ms-manage-layout">
+            <!-- Main Content -->
+            <div class="ms-manage-main">
+                <!-- Upload Section -->
+                <div class="ms-upload-card">
+                    <div class="ms-files-header">
+                        <h3>Upload Files</h3>
+                        <span class="ms-badge ms-badge-secondary">{{ website_files|length }} files</span>
+                    </div>
+                    
+                    <form id="uploadForm" method="POST" enctype="multipart/form-data" 
+                          action="{{ url_for('website.upload_website_files', website_id=website.id) }}">
+                        <div class="ms-upload-area" id="uploadArea">
+                            <div class="ms-upload-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17,8 12,3 7,8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <div class="ms-upload-text">
+                                <h4>Drag & drop files or folders</h4>
+                                <p>or click to browse your computer</p>
+                                <button type="button" class="ms-btn ms-btn-primary" id="browseBtn">
+                                    Browse Files
+                                </button>
+                                <button type="button" class="ms-btn ms-btn-secondary" id="browseFolderBtn">
+                                    Browse Folder
+                                </button>
+                            </div>
+                            <input type="file" id="fileInput" name="files[]" multiple style="display: none;">
+                            <input type="file" id="folderInput" name="files[]" webkitdirectory style="display: none;">
+                        </div>
+                        
+                        <div id="filePreview" class="ms-file-preview" style="display: none;">
+                            <div class="ms-preview-header">
+                                <h4>Selected Files</h4>
+                                <button type="button" class="ms-btn ms-btn-text" onclick="clearFiles()">Clear All</button>
+                            </div>
+                            <div id="fileList" class="ms-files-list"></div>
+                            <div class="ms-form-actions">
+                                <button type="submit" class="ms-btn ms-btn-primary ms-btn-large" id="uploadBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                        <polyline points="17,8 12,3 7,8"></polyline>
+                                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                                    </svg>
+                                    Upload Files
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Files List -->
+                <div class="ms-files-card">
+                    <div class="ms-files-header">
+                        <h3>Website Files</h3>
+                        {% set ns = namespace(has_index=false) %}
+                        {% for website_file, file in website_files %}
+                            {% if website_file.is_index %}
+                                {% set ns.has_index = true %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if ns.has_index %}
+                            <span class="ms-badge ms-badge-success">Ready to publish</span>
+                        {% else %}
+                            <span class="ms-badge ms-badge-warning">Missing index.html</span>
+                        {% endif %}
+                    </div>
+
+                    {% if website_files %}
+                        <div class="ms-files-list">
+                            {% for website_file, file in website_files %}
+                                <div class="ms-file-item">
+                                    <div class="ms-file-icon">
+                                        {% if file.original_filename.endswith('.html') %}📄
+                                        {% elif file.original_filename.endswith('.css') %}🎨
+                                        {% elif file.original_filename.endswith('.js') %}⚡
+                                        {% elif file.original_filename.endswith(('.jpg', '.jpeg', '.png', '.gif', '.svg')) %}🖼️
+                                        {% elif file.original_filename.endswith(('.mp4', '.webm', '.avi')) %}🎥
+                                        {% elif file.original_filename.endswith('.pdf') %}📑
+                                        {% else %}📁{% endif %}
+                                    </div>
+                                    <div class="ms-file-details">
+                                        <div class="ms-file-name">
+                                            {{ file.original_filename }}
+                                            {% if website_file.is_index %}
+                                                <span class="ms-badge ms-badge-success ms-badge-small">INDEX</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if '/' in website_file.file_path %}
+                                            <div class="ms-file-path">{{ website_file.file_path.rsplit('/', 1)[0] }}/</div>
+                                        {% endif %}
+                                        <div class="ms-file-size">{{ (file.file_size / 1024)|round(1) }} KB</div>
+                                    </div>
+                                    <div class="ms-file-actions">
+                                        <button class="ms-btn-icon" title="Download">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7,10 12,15 17,10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                        </button>
+                                        <button class="ms-btn-icon ms-btn-danger" title="Delete">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3,6 5,6 21,6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="ms-empty-state">
+                            <div class="ms-empty-state-icon">📁</div>
+                            <h3>No files uploaded yet</h3>
+                            <p>Upload your HTML, CSS, JavaScript and other website files to get started.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="ms-manage-sidebar">
+                <!-- Actions -->
+                <div class="ms-actions-card">
+                    <h3 class="ms-actions-title">Website Actions</h3>
+                    
+                    {% if ns.has_index and not website.is_published %}
+                        <form method="POST" action="{{ url_for('website.publish_website', website_id=website.id) }}">
+                            <button type="submit" class="ms-btn ms-btn-publish ms-btn-large">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20,6 9,17 4,12"></polyline>
+                                </svg>
+                                Publish Website
+                            </button>
+                        </form>
+                    {% elif website.is_published %}
+                        <form method="POST" action="{{ url_for('website.publish_website', website_id=website.id) }}">
+                            <button type="submit" class="ms-btn ms-btn-unpublish ms-btn-large">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                Unpublish
+                            </button>
+                        </form>
+                    {% else %}
+                        <button class="ms-btn ms-btn-secondary ms-btn-large" disabled title="Upload index.html to publish">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            Cannot Publish
+                        </button>
+                    {% endif %}
+                    
+                    <div class="ms-actions-buttons">
+                        <form method="POST" action="{{ url_for('website.fix_index_detection', website_id=website.id) }}">
+                            <button type="submit" class="ms-btn ms-btn-outline">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                </svg>
+                                Re-scan Index File
+                            </button>
+                        </form>
+                        
+                        <form method="POST" action="{{ url_for('website.cleanup_duplicate_files', website_id=website.id) }}">
+                            <button type="submit" class="ms-btn ms-btn-outline">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18l-1.5 14H4.5L3 6zM8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    <path d="M10 11v6M14 11v6"/>
+                                </svg>
+                                Clean Duplicates
+                            </button>
+                        </form>
+                        
+                        <button onclick="showSettingsModal()" class="ms-btn ms-btn-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.79a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            Website Settings
+                        </button>
+                        
+                        <button onclick="showAnalyticsModal()" class="ms-btn ms-btn-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                            </svg>
+                            View Analytics
+                        </button>
+                        
+                        <button onclick="showBackupModal()" class="ms-btn ms-btn-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21,15 16,10 5,21"></polyline>
+                            </svg>
+                            Backup & Export
+                        </button>
+                        
+                        <button onclick="showCollaborationModal()" class="ms-btn ms-btn-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Share & Collaborate
+                        </button>
+                        
+                        <div class="ms-action-separator"></div>
+                        
+                        <form method="POST" action="{{ url_for('website.delete_website', website_id=website.id) }}" 
+                              onsubmit="return confirm('Are you sure? This cannot be undone.')">
+                            <button type="submit" class="ms-btn ms-btn-delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3,6 5,6 21,6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                Delete Website
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="ms-info-card ms-tips-card">
+                    <h3>💡 Tips</h3>
+                    <ul class="ms-tips-list">
+                        <li>Your index.html file will be the homepage</li>
+                        <li>Folder structure is preserved</li>
+                        <li>Use relative paths for CSS and JS files</li>
+                        <li>{% if not user.is_premium %}Free plan includes watermark{% else %}Pro plan removes watermarks{% endif %}</li>
+                    </ul>
+                </div>
+
+                <!-- Storage Usage -->
+                <div class="ms-info-card">
+                    <h3>Storage Usage</h3>
+                    <div class="ms-storage-bar">
+                        {% set storage_limit = 10737418240 if user.is_premium else 104857600 %}
+                        {% set storage_percent = ((user.storage_used|default(0) / storage_limit) * 100)|round %}
+                        <div class="ms-storage-fill" style="width: {{ [storage_percent, 100]|min }}%"></div>
+                    </div>
+                    <p>{{ ((user.storage_used|default(0) / 1024 / 1024)|round(1)) }}MB / {% if user.is_premium %}10GB{% else %}100MB{% endif %}</p>
+                    {% if not user.is_premium %}
+                        <a href="#" class="ms-btn ms-btn-primary ms-btn-small">Upgrade to Pro</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Professional Modal Styles */
+.ms-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.ms-modal-content {
+    background: white;
+    margin: 5% auto;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideInUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ms-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e1e5e9;
+    background: #f8f9fa;
+    border-radius: 12px 12px 0 0;
+}
+
+.ms-modal-header h3 {
+    margin: 0;
+    color: #323130;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.ms-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #605e5c;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.ms-modal-close:hover {
+    background: #e1e5e9;
+    color: #323130;
+}
+
+.ms-modal-body {
+    padding: 2rem;
+}
+
+.ms-modal-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e1e5e9;
+    background: #f8f9fa;
+    border-radius: 0 0 12px 12px;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* Settings Modal Styles */
+.ms-setting-group {
+    margin-bottom: 2rem;
+}
+
+.ms-setting-group h4 {
+    color: #323130;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #0078d4;
+}
+
+.ms-setting-item {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.ms-setting-item label {
+    font-weight: 600;
+    color: #323130;
+    font-size: 14px;
+}
+
+.ms-setting-item input {
+    padding: 0.75rem;
+    border: 1px solid #d2d0ce;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ms-setting-item input:disabled {
+    background: #f3f2f1;
+    color: #a19f9d;
+}
+
+.ms-setting-note {
+    font-size: 12px;
+    color: #605e5c;
+    font-style: italic;
+}
+
+/* Analytics Modal Styles */
+.ms-analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.ms-stat-card {
+    background: linear-gradient(135deg, #0078d4, #005a9e);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+}
+
+.ms-stat-icon {
+    font-size: 24px;
+    margin-bottom: 0.5rem;
+}
+
+.ms-stat-number {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.ms-stat-label {
+    display: block;
+    font-size: 12px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ms-analytics-note {
+    background: linear-gradient(135deg, #fff3cd, #fff8e1);
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #856404;
+}
+
+/* Backup Modal Styles */
+.ms-backup-options {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.ms-backup-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e1e5e9;
+    transition: all 0.2s ease;
+}
+
+.ms-backup-option:hover {
+    border-color: #0078d4;
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.15);
+}
+
+.ms-backup-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.ms-backup-content h4 {
+    color: #323130;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.ms-backup-content p {
+    color: #605e5c;
+    font-size: 14px;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+/* Collaboration Modal Styles */
+.ms-collaboration-section {
+    margin-bottom: 2rem;
+}
+
+.ms-collaboration-section h4 {
+    color: #323130;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.ms-share-links {
+    display: grid;
+    gap: 1rem;
+}
+
+.ms-share-item {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.ms-share-item label {
+    font-weight: 600;
+    color: #323130;
+    font-size: 14px;
+}
+
+.ms-share-input {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.ms-share-input input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d2d0ce;
+    border-radius: 4px;
+    background: #f3f2f1;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.ms-social-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.ms-social-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.ms-twitter {
+    background: #1da1f2;
+}
+
+.ms-twitter:hover {
+    background: #1a91da;
+    transform: translateY(-1px);
+}
+
+.ms-linkedin {
+    background: #0077b5;
+}
+
+.ms-linkedin:hover {
+    background: #005885;
+    transform: translateY(-1px);
+}
+
+.ms-facebook {
+    background: #3b5998;
+}
+
+.ms-facebook:hover {
+    background: #2d4373;
+    transform: translateY(-1px);
+}
+
+.ms-invite-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.ms-invite-form input {
+    flex: 2;
+    padding: 0.75rem;
+    border: 1px solid #d2d0ce;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ms-invite-form select {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #d2d0ce;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+}
+
+/* Additional Button Styles */
+.ms-btn-outline {
+    background: transparent !important;
+    border: 2px solid #0078d4 !important;
+    color: #0078d4 !important;
+}
+
+.ms-btn-outline:hover {
+    background: #0078d4 !important;
+    color: white !important;
+}
+
+.ms-action-separator {
+    height: 1px;
+    background: #e1e5e9;
+    margin: 1rem 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ms-modal-content {
+        margin: 2% auto;
+        width: 95%;
+        max-height: 95vh;
+    }
+    
+    .ms-modal-header,
+    .ms-modal-body,
+    .ms-modal-footer {
+        padding: 1rem;
+    }
+    
+    .ms-analytics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ms-social-buttons {
+        justify-content: center;
+    }
+    
+    .ms-invite-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ms-share-input {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ms-backup-option {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<!-- Website Settings Modal -->
+<div id="settingsModal" class="ms-modal">
+    <div class="ms-modal-content">
+        <div class="ms-modal-header">
+            <h3>⚙️ Website Settings</h3>
+            <button class="ms-modal-close" onclick="hideModal('settingsModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <div class="ms-setting-group">
+                <h4>General Settings</h4>
+                <div class="ms-setting-item">
+                    <label>Website Name</label>
+                    <input type="text" value="{{ website.name }}" readonly>
+                    <span class="ms-setting-note">Change website name and description</span>
+                </div>
+                <div class="ms-setting-item">
+                    <label>Custom Domain</label>
+                    <input type="text" placeholder="your-domain.com" disabled>
+                    <span class="ms-setting-note">{% if user.is_premium %}Connect your custom domain{% else %}Upgrade to Pro for custom domains{% endif %}</span>
+                </div>
+            </div>
+            <div class="ms-setting-group">
+                <h4>Security & Privacy</h4>
+                <div class="ms-setting-item">
+                    <label>Password Protection</label>
+                    <button class="ms-btn ms-btn-secondary">{{ 'Update Password' if website.password_hash else 'Set Password' }}</button>
+                    <span class="ms-setting-note">{{ 'Password protection is active' if website.password_hash else 'Add password protection' }}</span>
+                </div>
+                <div class="ms-setting-item">
+                    <label>SEO Settings</label>
+                    <button class="ms-btn ms-btn-secondary">Configure SEO</button>
+                    <span class="ms-setting-note">Meta tags, descriptions, and search optimization</span>
+                </div>
+            </div>
+        </div>
+        <div class="ms-modal-footer">
+            <button onclick="hideModal('settingsModal')" class="ms-btn ms-btn-secondary">Close</button>
+            <button class="ms-btn ms-btn-primary">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Modal -->
+<div id="analyticsModal" class="ms-modal">
+    <div class="ms-modal-content">
+        <div class="ms-modal-header">
+            <h3>📊 Website Analytics</h3>
+            <button class="ms-modal-close" onclick="hideModal('analyticsModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <div class="ms-analytics-grid">
+                <div class="ms-stat-card">
+                    <div class="ms-stat-icon">👀</div>
+                    <div class="ms-stat-content">
+                        <span class="ms-stat-number">{{ website.view_count }}</span>
+                        <span class="ms-stat-label">Total Views</span>
+                    </div>
+                </div>
+                <div class="ms-stat-card">
+                    <div class="ms-stat-icon">📅</div>
+                    <div class="ms-stat-content">
+                        <span class="ms-stat-number">{{ (website.updated_date - website.created_date).days }}</span>
+                        <span class="ms-stat-label">Days Online</span>
+                    </div>
+                </div>
+                <div class="ms-stat-card">
+                    <div class="ms-stat-icon">📁</div>
+                    <div class="ms-stat-content">
+                        <span class="ms-stat-number">{{ website_files|length }}</span>
+                        <span class="ms-stat-label">Total Files</span>
+                    </div>
+                </div>
+                <div class="ms-stat-card">
+                    <div class="ms-stat-icon">💾</div>
+                    <div class="ms-stat-content">
+                        <span class="ms-stat-number">{{ ((website_files|sum(attribute='1.file_size') or 0) / 1024)|round(1) }}</span>
+                        <span class="ms-stat-label">KB Used</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ms-analytics-note">
+                <p>📈 <strong>Pro Tip:</strong> {% if user.is_premium %}Your Pro plan includes detailed analytics with visitor insights, referrers, and geographic data.{% else %}Upgrade to Pro for detailed analytics including visitor insights, referrers, and geographic data.{% endif %}</p>
+            </div>
+        </div>
+        <div class="ms-modal-footer">
+            <button onclick="hideModal('analyticsModal')" class="ms-btn ms-btn-secondary">Close</button>
+            {% if not user.is_premium %}
+            <button class="ms-btn ms-btn-primary">Upgrade for Advanced Analytics</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div id="backupModal" class="ms-modal">
+    <div class="ms-modal-content">
+        <div class="ms-modal-header">
+            <h3>💾 Backup & Export</h3>
+            <button class="ms-modal-close" onclick="hideModal('backupModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <div class="ms-backup-options">
+                <div class="ms-backup-option">
+                    <div class="ms-backup-icon">📦</div>
+                    <div class="ms-backup-content">
+                        <h4>Full Website Backup</h4>
+                        <p>Download all files as a ZIP archive with preserved folder structure</p>
+                        <button class="ms-btn ms-btn-primary">Create Backup</button>
+                    </div>
+                </div>
+                <div class="ms-backup-option">
+                    <div class="ms-backup-icon">🔄</div>
+                    <div class="ms-backup-content">
+                        <h4>Auto Backup</h4>
+                        <p>{% if user.is_premium %}Automatic daily backups (Pro feature){% else %}Upgrade to Pro for automatic daily backups{% endif %}</p>
+                        <button class="ms-btn {{ 'ms-btn-secondary' if user.is_premium else 'ms-btn-primary' }}" {{ 'disabled' if not user.is_premium else '' }}>
+                            {% if user.is_premium %}Configure Auto Backup{% else %}Upgrade to Enable{% endif %}
+                        </button>
+                    </div>
+                </div>
+                <div class="ms-backup-option">
+                    <div class="ms-backup-icon">📤</div>
+                    <div class="ms-backup-content">
+                        <h4>Export to Git</h4>
+                        <p>Export your website files to GitHub, GitLab, or other Git services</p>
+                        <button class="ms-btn ms-btn-secondary">Export to Git</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ms-modal-footer">
+            <button onclick="hideModal('backupModal')" class="ms-btn ms-btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Collaboration Modal -->
+<div id="collaborationModal" class="ms-modal">
+    <div class="ms-modal-content">
+        <div class="ms-modal-header">
+            <h3>👥 Share & Collaborate</h3>
+            <button class="ms-modal-close" onclick="hideModal('collaborationModal')">&times;</button>
+        </div>
+        <div class="ms-modal-body">
+            <div class="ms-collaboration-section">
+                <h4>Share Website</h4>
+                <div class="ms-share-links">
+                    <div class="ms-share-item">
+                        <label>Public URL:</label>
+                        <div class="ms-share-input">
+                            <input type="text" value="{{ request.host_url }}site/{{ website.slug }}" readonly id="publicUrl">
+                            <button onclick="copyToClipboard('publicUrl')" class="ms-btn ms-btn-secondary">Copy</button>
+                        </div>
+                    </div>
+                    <div class="ms-share-item">
+                        <label>Management URL:</label>
+                        <div class="ms-share-input">
+                            <input type="text" value="{{ request.host_url }}website/manage/{{ website.id }}" readonly id="manageUrl">
+                            <button onclick="copyToClipboard('manageUrl')" class="ms-btn ms-btn-secondary">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ms-collaboration-section">
+                <h4>Social Sharing</h4>
+                <div class="ms-social-buttons">
+                    <button onclick="shareToSocial('twitter')" class="ms-social-btn ms-twitter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                        </svg>
+                        Twitter
+                    </button>
+                    <button onclick="shareToSocial('linkedin')" class="ms-social-btn ms-linkedin">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
+                        LinkedIn
+                    </button>
+                    <button onclick="shareToSocial('facebook')" class="ms-social-btn ms-facebook">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                        </svg>
+                        Facebook
+                    </button>
+                </div>
+            </div>
+            {% if user.is_premium %}
+            <div class="ms-collaboration-section">
+                <h4>Team Collaboration (Pro)</h4>
+                <p>Invite team members to collaborate on this website:</p>
+                <div class="ms-invite-form">
+                    <input type="email" placeholder="Enter email address">
+                    <select>
+                        <option>Editor</option>
+                        <option>Viewer</option>
+                        <option>Admin</option>
+                    </select>
+                    <button class="ms-btn ms-btn-primary">Send Invite</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="ms-modal-footer">
+            <button onclick="hideModal('collaborationModal')" class="ms-btn ms-btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// File upload functionality
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const folderInput = document.getElementById('folderInput');
+const browseBtn = document.getElementById('browseBtn');
+const browseFolderBtn = document.getElementById('browseFolderBtn');
+const filePreview = document.getElementById('filePreview');
+const fileList = document.getElementById('fileList');
+let selectedFiles = [];
+
+// Button event listeners
+browseBtn.addEventListener('click', () => fileInput.click());
+browseFolderBtn.addEventListener('click', () => folderInput.click());
+
+// File input change handlers
+fileInput.addEventListener('change', handleFiles);
+folderInput.addEventListener('change', handleFiles);
+
+// Drag and drop
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFiles({ target: { files: e.dataTransfer.files } });
+});
+
+function handleFiles(e) {
+    if (!e.target.files.length) return;
+    
+    selectedFiles = Array.from(e.target.files);
+    displayFiles();
+}
+
+function displayFiles() {
+    if (selectedFiles.length === 0) {
+        filePreview.style.display = 'none';
+        return;
+    }
+    
+    filePreview.style.display = 'block';
+    fileList.innerHTML = '';
+    
+    selectedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'ms-file-item';
+        fileItem.innerHTML = `
+            <div class="ms-file-icon">${getFileIcon(file.name)}</div>
+            <div class="ms-file-details">
+                <div class="ms-file-name">${file.name}</div>
+                <div class="ms-file-size">${formatFileSize(file.size)}</div>
+            </div>
+            <button type="button" class="ms-btn-icon ms-btn-danger" onclick="removeFile(${index})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        `;
+        fileList.appendChild(fileItem);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    updateFileInput();
+    displayFiles();
+}
+
+function clearFiles() {
+    selectedFiles = [];
+    fileInput.value = '';
+    folderInput.value = '';
+    displayFiles();
+}
+
+function updateFileInput() {
+    const dt = new DataTransfer();
+    selectedFiles.forEach(file => dt.items.add(file));
+    fileInput.files = dt.files;
+}
+
+function getFileIcon(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    const icons = {
+        html: '📄', css: '🎨', js: '⚡', json: '📋',
+        jpg: '🖼️', jpeg: '🖼️', png: '🖼️', gif: '🖼️', svg: '🖼️',
+        mp4: '🎥', webm: '🎥', avi: '🎥',
+        pdf: '📑', txt: '📃', md: '📝'
+    };
+    return icons[ext] || '📁';
+}
+
+function formatFileSize(bytes) {
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let size = bytes;
+    let unitIndex = 0;
+    while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+    }
+    return `${size.toFixed(1)} ${units[unitIndex]}`;
+}
+
+function copyWebsiteUrl() {
+    const input = document.getElementById('websiteUrl');
+    input.select();
+    document.execCommand('copy');
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 2000);
+}
+
+// Form submission with file validation
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    updateFileInput(); // Ensure file input has current files
+});
+
+// Professional feature modal functions
+function showSettingsModal() {
+    showModal('settingsModal');
+}
+
+function showAnalyticsModal() {
+    showModal('analyticsModal');
+}
+
+function showBackupModal() {
+    showModal('backupModal');
+}
+
+function showCollaborationModal() {
+    showModal('collaborationModal');
+}
+
+function showModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function hideModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function copyToClipboard(inputId) {
+    const input = document.getElementById(inputId);
+    input.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 2000);
+}
+
+function shareToSocial(platform) {
+    const url = encodeURIComponent(window.location.origin + '/site/{{ website.slug }}');
+    const title = encodeURIComponent('{{ website.name }}');
+    const description = encodeURIComponent('{{ website.description or "Check out my website!" }}');
+    
+    let shareUrl = '';
+    
+    switch(platform) {
+        case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title} - ${description}`;
+            break;
+        case 'linkedin':
+            shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            break;
+        case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            break;
+    }
+    
+    if (shareUrl) {
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', function(event) {
+    const modals = ['settingsModal', 'analyticsModal', 'backupModal', 'collaborationModal'];
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+            hideModal(modalId);
+        }
+    });
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modals = ['settingsModal', 'analyticsModal', 'backupModal', 'collaborationModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal.style.display === 'block') {
+                hideModal(modalId);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

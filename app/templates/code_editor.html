@@ -1,0 +1,399 @@
+{% extends "layout.html" %}
+
+{% block title %}Code Editor - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="editor-page">
+    <div class="editor-container">
+        <div class="editor-header">
+            <h1>HTML/CSS/JS Editor</h1>
+            <div class="editor-actions">
+                <button class="btn btn-secondary" onclick="runCode()">▶ Run Code</button>
+                <button class="btn btn-primary" onclick="publishCode()">🌐 Publish</button>
+            </div>
+        </div>
+        
+        <div class="editor-layout">
+            <div class="editor-panel">
+                <div class="tab-bar">
+                    <button class="tab active" onclick="switchTab('html')">HTML</button>
+                    <button class="tab" onclick="switchTab('css')">CSS</button>
+                    <button class="tab" onclick="switchTab('js')">JavaScript</button>
+                </div>
+                
+                <div class="editor-content">
+                    <textarea id="html-editor" class="code-editor active" placeholder="Write your HTML here..."><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web Page</title>
+</head>
+<body>
+    <h1>Welcome to FileLink Pro</h1>
+    <p>Start coding your HTML here!</p>
+    <button onclick="showMessage()">Click Me</button>
+</body>
+</html></textarea>
+                    
+                    <textarea id="css-editor" class="code-editor" placeholder="Write your CSS here...">body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+button {
+    background: white;
+    color: #764ba2;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}</textarea>
+                    
+                    <textarea id="js-editor" class="code-editor" placeholder="Write your JavaScript here...">function showMessage() {
+    alert('Hello from FileLink Pro!');
+    document.querySelector('h1').textContent = 'You clicked the button!';
+}</textarea>
+                </div>
+            </div>
+            
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <span>Preview</span>
+                    <button class="btn-small" onclick="refreshPreview()">🔄 Refresh</button>
+                </div>
+                <iframe id="preview-frame" class="preview-frame"></iframe>
+            </div>
+        </div>
+        
+        <div id="publish-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closePublishModal()">&times;</span>
+                <h2>Publish Your Code</h2>
+                <form id="publish-form" onsubmit="submitPublish(event)">
+                    <div class="form-group">
+                        <label>Project Name</label>
+                        <input type="text" id="project-name" class="form-input" placeholder="My Awesome Project" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password Protection (Optional)</label>
+                        <input type="password" id="project-password" class="form-input" placeholder="Leave blank for public access">
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry (Days)</label>
+                        <input type="number" id="expiry-days" class="form-input" min="0" placeholder="0 for permanent" value="0">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Generate Link</button>
+                </form>
+                <div id="publish-result" style="display: none;">
+                    <h3>Success! Your code is published</h3>
+                    <div class="link-box">
+                        <input type="text" id="published-link" class="link-input" readonly>
+                        <button class="btn btn-secondary" onclick="copyPublishedLink()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.editor-page {
+    padding: 20px 0;
+    background: #1a1a1a;
+    min-height: calc(100vh - 60px);
+}
+
+.editor-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.editor-header h1 {
+    color: white;
+    font-size: 24px;
+    margin: 0;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: calc(100vh - 200px);
+}
+
+.editor-panel, .preview-panel {
+    background: #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-bar {
+    display: flex;
+    background: #1a1a1a;
+}
+
+.tab {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    color: #888;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.tab.active {
+    background: #2a2a2a;
+    color: white;
+    border-bottom: 2px solid #0D6EFD;
+}
+
+.editor-content {
+    flex: 1;
+    position: relative;
+}
+
+.code-editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: #2a2a2a;
+    color: #f8f8f2;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    border: none;
+    resize: none;
+    display: none;
+}
+
+.code-editor.active {
+    display: block;
+}
+
+.code-editor:focus {
+    outline: none;
+}
+
+.preview-header {
+    padding: 12px 20px;
+    background: #1a1a1a;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-small {
+    padding: 4px 12px;
+    background: #0D6EFD;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.preview-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: white;
+}
+
+#publish-modal .modal-content {
+    max-width: 500px;
+}
+
+#publish-result {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #E5E7EB;
+}
+
+#publish-result h3 {
+    color: #10B981;
+    margin-bottom: 15px;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .editor-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .editor-panel, .preview-panel {
+        height: 400px;
+    }
+}
+</style>
+
+<script>
+let currentTab = 'html';
+
+function switchTab(tab) {
+    currentTab = tab;
+    
+    // Update tab UI
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Show corresponding editor
+    document.querySelectorAll('.code-editor').forEach(e => e.classList.remove('active'));
+    document.getElementById(tab + '-editor').classList.add('active');
+}
+
+function runCode() {
+    const html = document.getElementById('html-editor').value;
+    const css = document.getElementById('css-editor').value;
+    const js = document.getElementById('js-editor').value;
+    
+    const code = `
+        ${html}
+        <style>${css}</style>
+        <script>${js}<\/script>
+    `;
+    
+    const iframe = document.getElementById('preview-frame');
+    iframe.srcdoc = code;
+}
+
+function refreshPreview() {
+    runCode();
+}
+
+function publishCode() {
+    document.getElementById('publish-modal').style.display = 'block';
+}
+
+function closePublishModal() {
+    document.getElementById('publish-modal').style.display = 'none';
+}
+
+async function submitPublish(event) {
+    event.preventDefault();
+    
+    const html = document.getElementById('html-editor').value;
+    const css = document.getElementById('css-editor').value;
+    const js = document.getElementById('js-editor').value;
+    
+    const fullCode = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${document.getElementById('project-name').value}</title>
+    <style>${css}</style>
+</head>
+<body>
+    ${html.replace(/<\/?html[^>]*>/gi, '').replace(/<\/?head[^>]*>/gi, '').replace(/<\/?body[^>]*>/gi, '').replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')}
+    <script>${js}<\/script>
+</body>
+</html>`;
+    
+    // Create a blob and file
+    const blob = new Blob([fullCode], { type: 'text/html' });
+    const file = new File([blob], document.getElementById('project-name').value + '.html', { type: 'text/html' });
+    
+    // Upload the file
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const password = document.getElementById('project-password').value;
+    if (password) {
+        formData.append('password', password);
+    }
+    
+    const expiryDays = document.getElementById('expiry-days').value;
+    if (expiryDays && expiryDays > 0) {
+        formData.append('expiry_days', expiryDays);
+    }
+    
+    try {
+        const response = await fetch('/upload/process', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('publish-form').style.display = 'none';
+            document.getElementById('publish-result').style.display = 'block';
+            document.getElementById('published-link').value = data.link.url;
+        } else {
+            alert('Publishing failed: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Publishing failed: ' + error);
+    }
+}
+
+function copyPublishedLink() {
+    const input = document.getElementById('published-link');
+    input.select();
+    document.execCommand('copy');
+    event.target.textContent = 'Copied!';
+    setTimeout(() => {
+        event.target.textContent = 'Copy';
+    }, 2000);
+}
+
+// Initialize with sample code
+window.addEventListener('DOMContentLoaded', () => {
+    runCode();
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target.className === 'modal') {
+        event.target.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

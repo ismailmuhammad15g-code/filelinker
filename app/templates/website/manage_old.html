@@ -1,0 +1,2028 @@
+{% extends "layout.html" %}
+{% block title %}Manage {{ website.name }} - FileLink Pro{% endblock %}
+{% block content %}
+<section class="manage-website-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>{{ website.name }}</h1>
+            <p>Manage your website files and settings</p>
+            <div class="website-status">
+                {% if website.is_published %}
+                    <span class="badge badge-success">Published</span>
+                {% else %}
+                    <span class="badge badge-warning">Not Published</span>
+                {% endif %}
+                {% if website.password_hash %}
+                    <span class="badge badge-info">Password Protected</span>
+                {% endif %}
+                {% if website.is_public %}
+                    <span class="badge badge-primary">Public</span>
+                {% else %}
+                    <span class="badge badge-secondary">Private</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <div class="alert-icon">
+                            {% if category == 'success' %}
+                                ✅
+                            {% elif category == 'danger' %}
+                                ❌
+                            {% elif category == 'warning' %}
+                                ⚠️
+                            {% else %}
+                                ℹ️
+                            {% endif %}
+                        </div>
+                        <div class="alert-content">{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="website-url-section">
+            {% if website.is_published %}
+                <div class="url-display">
+                    <label>Your Website URL:</label>
+                    <div class="url-input-group">
+                        <input type="text" id="website-url" value="{{ request.host_url }}site/{{ website.slug }}" readonly>
+                        <button onclick="copyWebsiteURL()" class="btn btn-copy">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                        <a href="/site/{{ website.slug }}" target="_blank" class="btn btn-view">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            View Site
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="management-grid">
+            <!-- File Upload Section -->
+            <div class="upload-section">
+                <div class="section-header">
+                    <h2>Upload Files</h2>
+                    <button class="btn-help" onclick="toggleHelp()">?</button>
+                </div>
+
+                <div class="help-panel" id="helpPanel" style="display:none;">
+                    <h4>📌 Important Features:</h4>
+                    <ul>
+                        <li><strong>📂 Folder Support:</strong> Upload entire folders with preserved structure</li>
+                        <li><strong>🎯 Automatic Detection:</strong> We automatically find index.html in any folder</li>
+                        <li><strong>📊 Free Plan Limits:</strong> 100MB storage, 50 files per website</li>
+                        <li><strong>✨ Pro Plan:</strong> Unlimited files, 10GB storage, custom domains</li>
+                        <li><strong>📝 Supported Files:</strong> HTML, CSS, JS, images, videos, fonts, and more</li>
+                        <li><strong>⚡ Smart Upload:</strong> Drag entire project folders for instant upload</li>
+                    </ul>
+                    
+                    <div class="quota-display">
+                        <h5>Your {% if user.is_premium %}Pro{% else %}Free{% endif %} Plan Quota:</h5>
+                        <div class="quota-bar">
+                            {% set storage_limit = 10737418240 if user.is_premium else 104857600 %}
+                            {% set storage_percent = ((user.storage_used|default(0) / storage_limit) * 100)|round %}
+                            <div class="quota-fill" style="width: {{ [storage_percent, 100]|min }}%"></div>
+                        </div>
+                        <p>{{ ((user.storage_used|default(0) / 1024 / 1024)|round(1)) }}MB / {% if user.is_premium %}10GB{% else %}100MB{% endif %} used</p>
+                        {% if not user.is_premium %}
+                            <button class="btn btn-sm btn-primary" onclick="showUpgradeModal()">🎆 Upgrade to Pro</button>
+                        {% else %}
+                            <span class="badge badge-success">Pro Member</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form id="uploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('website.upload_website_files', website_id=website.id) }}">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="upload-text">
+                            <p><strong>Drag & Drop files here</strong></p>
+                            <p>or</p>
+                    <label for="file-input" class="btn btn-primary">Browse Files/Folders</label>
+                    <input type="file" id="file-input" name="files[]" multiple webkitdirectory directory accept="*" style="display:none;">
+                        </div>
+                        <div class="accepted-types">
+                            <small>Accepted: HTML, CSS, JS, Images (JPG, PNG, GIF, SVG), Videos, PDFs, and more</small>
+                        </div>
+                    </div>
+                    <div id="fileList" class="file-preview-list"></div>
+                    <div id="fileActions" style="display:none; margin-top: 10px; margin-bottom: 10px;">
+                        <button type="button" onclick="clearAllFiles()" class="btn btn-secondary btn-sm">Clear All</button>
+                        <span id="totalSize" style="margin-left: 10px; color: #6B7280;"></span>
+                    </div>
+                    <div id="uploadProgress" class="upload-progress" style="display:none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">Uploading...</span>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-upload" id="uploadBtn" style="display:none;">
+                        Upload Files
+                    </button>
+                </form>
+            </div>
+
+            <!-- Current Files Section -->
+            <div class="files-section">
+                <div class="section-header">
+                    <h2>Current Files</h2>
+                    <span class="file-count">{{ website_files|length }} files</span>
+                </div>
+
+                {% set ns = namespace(has_index=false) %}
+                {% if website_files %}
+                    {% for website_file, file in website_files %}
+                        {% if website_file.is_index %}
+                            {% set ns.has_index = true %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if not ns.has_index %}
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-content">
+                            <strong>Missing index.html</strong><br>
+                            Upload an index.html file to publish your website
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="files-list">
+                    {% if website_files %}
+                        {% for website_file, file in website_files %}
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <span class="file-icon">
+                                        {% if file.original_filename.endswith('.html') %}
+                                            📄
+                                        {% elif file.original_filename.endswith('.css') %}
+                                            🎨
+                                        {% elif file.original_filename.endswith('.js') %}
+                                            ⚡
+                                        {% elif file.original_filename.endswith(('.jpg', '.jpeg', '.png', '.gif', '.svg')) %}
+                                            🖼️
+                                        {% elif file.original_filename.endswith(('.mp4', '.webm', '.avi')) %}
+                                            🎥
+                                        {% elif file.original_filename.endswith('.pdf') %}
+                                            📑
+                                        {% else %}
+                                            📁
+                                        {% endif %}
+                                    </span>
+                                    <div class="file-details">
+                                        <span class="file-name">
+                                            {% if '/' in website_file.file_path %}
+                                                <span class="folder-indicator">{{ website_file.file_path.rsplit('/', 1)[0] }}/</span>
+                                            {% endif %}
+                                            {{ file.original_filename }}
+                                        </span>
+                                        <span class="file-size">{{ (file.file_size / 1024)|round(1) }} KB</span>
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <a href="#" class="btn-icon" title="Download">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                    </a>
+                                    <button class="btn-icon btn-danger" title="Delete">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No files uploaded yet</p>
+                            <small>Start by uploading your HTML files</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            {% if ns.has_index and not website.is_published %}
+                <form method="POST" action="{{ url_for('website.publish_website', website_id=website.id) }}" onsubmit="showPublishingLoader()" style="display:inline;">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Publish Website
+                    </button>
+                </form>
+            {% elif website.is_published %}
+                <form method="POST" action="{{ url_for('website.publish_website', website_id=website.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Unpublish Website
+                    </button>
+                </form>
+            {% elif not ns.has_index %}
+                <button class="btn btn-secondary btn-lg" disabled title="Upload index.html to publish">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Cannot Publish (Missing index.html)
+                </button>
+            {% endif %}
+            
+            <form method="POST" action="{{ url_for('website.delete_website', website_id=website.id) }}" 
+                  onsubmit="return confirm('Are you sure you want to delete this website? This action cannot be undone.');" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Delete Website
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Publishing Loader Overlay -->
+<div id="publishingLoader" class="publishing-loader" style="display:none;">
+    <div class="loader-content">
+        <!-- Animated Logo/Icon -->
+        <div class="publishing-icon-wrapper">
+            <div class="publishing-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Multi-step Progress -->
+        <div class="publishing-steps">
+            <div class="step" id="step1">
+                <div class="step-icon">🔍</div>
+                <div class="step-text">Scanning</div>
+                <div class="step-status">⏳</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-icon">📁</div>
+                <div class="step-text">Organizing</div>
+                <div class="step-status">⏳</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-icon">✅</div>
+                <div class="step-text">Validating</div>
+                <div class="step-status">⏳</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-icon">⚡</div>
+                <div class="step-text">Optimizing</div>
+                <div class="step-status">⏳</div>
+            </div>
+            <div class="step" id="step5">
+                <div class="step-icon">🔧</div>
+                <div class="step-text">Configuring</div>
+                <div class="step-status">⏳</div>
+            </div>
+            <div class="step" id="step6">
+                <div class="step-icon">🌐</div>
+                <div class="step-text">URL Setup</div>
+                <div class="step-status">⏳</div>
+            </div>
+            <div class="step" id="step7">
+                <div class="step-icon">🚀</div>
+                <div class="step-text">Deploying</div>
+                <div class="step-status">⏳</div>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="publishing-progress-bar">
+            <div class="publishing-progress-fill" id="publishingProgressFill"></div>
+        </div>
+        
+        <!-- Main Text -->
+        <h2 class="loader-text" id="loaderText">Initializing...</h2>
+        <p class="loader-subtext" id="loaderSubtext">Please wait while we prepare your website</p>
+        
+        <!-- Animated Balls Background -->
+        <aside class="container-loader">
+            <article style="--color: #ff6347; --i: 12px; --d: 3.4s" class="ball"></article>
+            <article style="--color: #00ced1; --i: 18px; --d: 6.1s" class="ball"></article>
+            <article style="--color: #adff2f; --i: 10px; --d: 2.9s" class="ball"></article>
+            <article style="--color: #9370db; --i: 16px; --d: 7.8s" class="ball"></article>
+            <article style="--color: #ff1493; --i: 14px; --d: 4.6s" class="ball"></article>
+            <article style="--color: #00bfff; --i: 11px; --d: 3.3s" class="ball"></article>
+            <article style="--color: #7fff00; --i: 17px; --d: 5.5s" class="ball"></article>
+            <article style="--color: #dc143c; --i: 13px; --d: 6.7s" class="ball"></article>
+        </aside>
+        
+        <!-- Fun Facts / Tips -->
+        <div class="publishing-tips" id="publishingTips">
+            <p class="tip">💡 Tip: You can password protect your website for extra security</p>
+        </div>
+    </div>
+</div>
+
+<!-- Upgrade Modal -->
+<div id="upgradeModal" class="modal" style="display:none;">
+    <div class="modal-content upgrade-modal">
+        <button class="modal-close" onclick="closeUpgradeModal()">×</button>
+        <div class="upgrade-header">
+            <div class="upgrade-icon">🎆</div>
+            <h2>Upgrade to FileLink Pro</h2>
+            <p>Unlock unlimited potential for your websites</p>
+        </div>
+        
+        <div class="pricing-table">
+            <div class="plan-card free-plan">
+                <h3>Free Plan</h3>
+                <div class="price">$0<span>/month</span></div>
+                <ul>
+                    <li>✓ 100MB Storage</li>
+                    <li>✓ 50 Files per website</li>
+                    <li>✓ Basic support</li>
+                    <li>✗ Custom domains</li>
+                    <li>✗ SSL certificates</li>
+                    <li>✗ Analytics</li>
+                </ul>
+                <button class="btn btn-secondary" disabled>Current Plan</button>
+            </div>
+            
+            <div class="plan-card pro-plan featured">
+                <div class="featured-badge">MOST POPULAR</div>
+                <h3>Pro Plan</h3>
+                <div class="price">$9.99<span>/month</span></div>
+                <ul>
+                    <li>✓ 10GB Storage</li>
+                    <li>✓ Unlimited files</li>
+                    <li>✓ Priority support</li>
+                    <li>✓ Custom domains</li>
+                    <li>✓ Free SSL certificates</li>
+                    <li>✓ Advanced analytics</li>
+                    <li>✓ No ads</li>
+                    <li>✓ Backup & restore</li>
+                </ul>
+                <button class="btn btn-success btn-lg">Upgrade Now</button>
+            </div>
+            
+            <div class="plan-card enterprise-plan">
+                <h3>Enterprise</h3>
+                <div class="price">$49.99<span>/month</span></div>
+                <ul>
+                    <li>✓ Unlimited storage</li>
+                    <li>✓ Unlimited websites</li>
+                    <li>✓ 24/7 Phone support</li>
+                    <li>✓ Multiple domains</li>
+                    <li>✓ Advanced SSL</li>
+                    <li>✓ Real-time analytics</li>
+                    <li>✓ Team collaboration</li>
+                    <li>✓ API access</li>
+                </ul>
+                <button class="btn btn-primary">Contact Sales</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="publishSuccess" class="success-modal" style="display:none;">
+    <div class="success-content">
+        <div class="success-icon">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        <h2>Website Published Successfully!</h2>
+        <p>Your website is now live and accessible</p>
+        <div class="success-url">
+            <input type="text" id="successUrl" readonly>
+            <button onclick="copySuccessUrl()" class="btn btn-primary">Copy URL</button>
+        </div>
+        <div class="success-actions">
+            <a href="#" id="viewWebsiteBtn" target="_blank" class="btn btn-success">View Website</a>
+            <button onclick="closeSuccessModal()" class="btn btn-secondary">Continue Managing</button>
+        </div>
+        <div class="confetti-container" id="confettiContainer"></div>
+    </div>
+</div>
+
+<style>
+.manage-website-page {
+    padding: 40px 0;
+    min-height: 80vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.page-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 36px;
+    margin-bottom: 0.5rem;
+}
+
+.website-status {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-success { background: #10B981; color: white; }
+.badge-warning { background: #F59E0B; color: white; }
+.badge-info { background: #3B82F6; color: white; }
+.badge-primary { background: #667eea; color: white; }
+.badge-secondary { background: #6B7280; color: white; }
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.alert-icon {
+    font-size: 20px;
+    margin-right: 1rem;
+}
+
+.alert-success { border-left: 4px solid #10B981; }
+.alert-danger { border-left: 4px solid #EF4444; }
+.alert-warning { border-left: 4px solid #F59E0B; }
+.alert-info { border-left: 4px solid #3B82F6; }
+
+.website-url-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.url-display label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.url-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.url-input-group input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 6px;
+    font-family: monospace;
+    background: #F9FAFB;
+}
+
+.btn-copy {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.btn-copy:hover {
+    background: #5a67d8;
+    transform: translateY(-1px);
+}
+
+.btn-view {
+    background: #10B981;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-view:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.management-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.upload-section, .files-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 20px;
+    color: #0B2545;
+    margin: 0;
+}
+
+.btn-help {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #E5E7EB;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.help-panel {
+    background: #F3F4F6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.help-panel h4 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+}
+
+.help-panel ul {
+    margin: 0 0 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.help-panel li {
+    margin: 0.25rem 0;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+/* Quota Display */
+.quota-display {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.quota-display h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.quota-bar {
+    width: 100%;
+    height: 12px;
+    background: #E5E7EB;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.quota-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+    min-width: 2%;
+}
+
+.quota-display p {
+    font-size: 13px;
+    color: #6B7280;
+    margin-bottom: 0.75rem;
+}
+
+.quota-display .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 12px;
+}
+
+.upload-area {
+    border: 2px dashed #CBD5E1;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.upload-area.dragover {
+    border-color: #667eea;
+    background: #F0F4FF;
+}
+
+.upload-icon svg {
+    color: #9CA3AF;
+}
+
+.upload-text {
+    margin: 1rem 0;
+}
+
+.upload-text p {
+    margin: 0.5rem 0;
+    color: #6B7280;
+}
+
+.accepted-types {
+    margin-top: 1rem;
+}
+
+.accepted-types small {
+    color: #9CA3AF;
+}
+
+.file-preview-list {
+    margin-top: 1rem;
+}
+
+.file-preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #F9FAFB;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.file-preview-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-preview-icon {
+    font-size: 24px;
+}
+
+.file-preview-details span {
+    display: block;
+}
+
+.file-preview-name {
+    font-weight: 500;
+    color: #374151;
+}
+
+.file-preview-size {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+.btn-remove {
+    background: #EF4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-progress {
+    margin-top: 1rem;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: #6B7280;
+    text-align: center;
+    display: block;
+}
+
+.btn-upload {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.file-count {
+    background: #E5E7EB;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.files-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #F9FAFB;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    transition: background 0.2s;
+}
+
+.file-item:hover {
+    background: #F3F4F6;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-icon {
+    font-size: 24px;
+}
+
+.file-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-name {
+    font-weight: 500;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.folder-indicator {
+    font-size: 11px;
+    color: #9CA3AF;
+    font-weight: normal;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: #F9FAFB;
+    border-color: #CBD5E1;
+}
+
+.btn-icon.btn-danger {
+    color: #EF4444;
+}
+
+.btn-icon.btn-danger:hover {
+    background: #FEF2F2;
+    border-color: #FCA5A5;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9CA3AF;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    gap: 0.5rem;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #5a67d8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-success {
+    background: #10B981;
+    color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-warning {
+    background: #F59E0B;
+    color: white;
+}
+
+.btn-warning:hover:not(:disabled) {
+    background: #D97706;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-danger {
+    background: #EF4444;
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #DC2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-secondary {
+    background: #6B7280;
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #4B5563;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 16px;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 13px;
+}
+
+/* Publishing Loader Styles */
+.publishing-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(11, 37, 69, 0.98), rgba(102, 126, 234, 0.98));
+    backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.loader-content {
+    text-align: center;
+    max-width: 600px;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Publishing Icon */
+.publishing-icon-wrapper {
+    margin-bottom: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.publishing-icon {
+    display: inline-block;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+}
+
+.publishing-icon svg {
+    color: white;
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Multi-step Progress */
+.publishing-steps {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+}
+
+.step.active {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.step.completed {
+    opacity: 1;
+}
+
+.step-icon {
+    font-size: 28px;
+    margin-bottom: 0.5rem;
+    animation: bounce 1s ease infinite;
+}
+
+.step.active .step-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.step-text {
+    font-size: 12px;
+    color: white;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.step-status {
+    font-size: 16px;
+}
+
+/* Progress Bar */
+.publishing-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 2rem 0;
+}
+
+.publishing-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2, #ff6347);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -100% 0; }
+    100% { background-position: 100% 0; }
+}
+
+/* Tips */
+.publishing-tips {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
+
+.tip {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    margin: 0;
+    animation: fadeInOut 4s ease infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Background Balls */
+.container-loader {
+    --size: 300px;
+    width: var(--size);
+    height: var(--size);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    zoom: 0.3;
+    opacity: 0.3;
+    z-index: -1;
+}
+
+.container-loader .ball {
+    position: absolute;
+    width: calc(var(--size) + var(--i));
+    height: calc(var(--size) + var(--i));
+    background-color: var(--color);
+    border-radius: 50%;
+    animation: move 5s linear infinite;
+    transform-origin: var(--size);
+    mix-blend-mode: hard-light;
+    animation-duration: var(--d);
+    filter: blur(58px);
+}
+
+.container-loader .ball:nth-child(even) {
+    animation-direction: reverse;
+}
+
+@keyframes move {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+}
+
+.loader-text {
+    color: white;
+    margin-top: 1rem;
+    font-size: 28px;
+    font-weight: 600;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.loader-subtext {
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0.5rem;
+    font-size: 16px;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Success Modal */
+.success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(102, 126, 234, 0.95));
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Success Checkmark */
+.success-icon {
+    margin-bottom: 1.5rem;
+}
+
+.checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #10B981;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke: #10B981;
+    stroke-width: 3;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+.success-content h2 {
+    color: #0B2545;
+    margin-bottom: 0.5rem;
+    font-size: 28px;
+}
+
+.success-content p {
+    color: #6B7280;
+    margin-bottom: 1.5rem;
+}
+
+.success-url {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.success-url input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.success-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Upgrade Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 1000px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: #F3F4F6;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #E5E7EB;
+    transform: rotate(90deg);
+}
+
+.upgrade-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.upgrade-icon {
+    font-size: 60px;
+    margin-bottom: 1rem;
+}
+
+.upgrade-header h2 {
+    font-size: 32px;
+    color: #0B2545;
+    margin-bottom: 0.5rem;
+}
+
+.upgrade-header p {
+    color: #6B7280;
+    font-size: 16px;
+}
+
+.pricing-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.plan-card {
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.plan-card.featured {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: scale(1.05);
+}
+
+.featured-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #F59E0B;
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.plan-card h3 {
+    font-size: 24px;
+    margin-bottom: 1rem;
+}
+
+.plan-card .price {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.plan-card .price span {
+    font-size: 16px;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+.plan-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    text-align: left;
+}
+
+.plan-card ul li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.plan-card.featured ul li {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Confetti */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #667eea;
+    animation: confetti-fall 3s linear;
+}
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .url-input-group {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// File Upload Handling
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('uploadArea');
+const fileList = document.getElementById('fileList');
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadForm = document.getElementById('uploadForm');
+const uploadProgress = document.getElementById('uploadProgress');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+
+let selectedFiles = [];
+let isFolder = false;
+
+// Setup file input for both files and folders
+fileInput.setAttribute('multiple', 'multiple');
+
+// Add folder upload button
+const uploadText = document.querySelector('.upload-text');
+if (uploadText) {
+    const folderBtn = document.createElement('label');
+    folderBtn.innerHTML = 'Browse Folder';
+    folderBtn.className = 'btn btn-secondary';
+    folderBtn.style.marginLeft = '10px';
+    
+    const folderInput = document.createElement('input');
+    folderInput.type = 'file';
+    folderInput.id = 'folder-input';
+    folderInput.name = 'files[]';
+    folderInput.setAttribute('webkitdirectory', '');
+    folderInput.setAttribute('directory', '');
+    folderInput.setAttribute('multiple', '');
+    folderInput.style.display = 'none';
+    
+    folderBtn.appendChild(folderInput);
+    uploadText.querySelector('.btn-primary').insertAdjacentElement('afterend', folderBtn);
+    
+    folderInput.addEventListener('change', (e) => {
+        isFolder = true;
+        handleFiles(e);
+    });
+}
+
+fileInput.addEventListener('change', handleFiles);
+
+// Click handler for upload area
+uploadArea.addEventListener('click', (e) => {
+    // Only trigger if clicking on the area itself or specific child elements
+    if (e.target.closest('label[for="file-input"]')) {
+        return; // Let the label handle this
+    }
+    if (e.target === uploadArea || e.target.closest('.upload-icon') || 
+        (e.target.closest('.upload-text') && !e.target.closest('label'))) {
+        fileInput.click();
+    }
+});
+
+// Drag and drop handlers
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.remove('dragover');
+    
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles.length > 0) {
+        // Create new DataTransfer to combine existing and new files
+        const dt = new DataTransfer();
+        
+        // Add existing files
+        for (let file of selectedFiles) {
+            dt.items.add(file);
+        }
+        
+        // Add new dropped files
+        for (let file of droppedFiles) {
+            dt.items.add(file);
+        }
+        
+        fileInput.files = dt.files;
+        handleFiles({ target: { files: dt.files } });
+    }
+});
+
+function handleFiles(e) {
+    if (!e.target.files || e.target.files.length === 0) {
+        return;
+    }
+    
+    selectedFiles = Array.from(e.target.files);
+    console.log(`Selected ${selectedFiles.length} files:`, selectedFiles.map(f => f.name));
+    displayFiles();
+}
+
+function getFileIcon(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    const iconMap = {
+        'html': '📄',
+        'htm': '📄',
+        'css': '🎨',
+        'js': '⚡',
+        'jpg': '🖼️',
+        'jpeg': '🖼️',
+        'png': '🖼️',
+        'gif': '🖼️',
+        'svg': '🖼️',
+        'mp4': '🎥',
+        'webm': '🎥',
+        'avi': '🎥',
+        'pdf': '📑',
+        'doc': '📝',
+        'docx': '📝',
+        'txt': '📃',
+        'zip': '🗜️',
+        'rar': '🗜️',
+        'json': '📋',
+        'xml': '📋',
+        'php': '🔧',
+        'py': '🐍',
+        'java': '☕',
+        'c': '⚙️',
+        'cpp': '⚙️',
+        'h': '⚙️'
+    };
+    return iconMap[ext] || '📁';
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function displayFiles() {
+    fileList.innerHTML = '';
+    const fileActions = document.getElementById('fileActions');
+    const totalSizeSpan = document.getElementById('totalSize');
+    
+    if (selectedFiles.length > 0) {
+        // Calculate total size
+        let totalSize = 0;
+        let hasOversizedFiles = false;
+        const maxFileSize = 100 * 1024 * 1024; // 100MB
+        
+        // Add file count header
+        const header = document.createElement('div');
+        header.style.marginBottom = '10px';
+        header.innerHTML = `<strong>Selected ${selectedFiles.length} file(s)</strong>`;
+        fileList.appendChild(header);
+        
+        selectedFiles.forEach((file, index) => {
+            totalSize += file.size;
+            const isOversized = file.size > maxFileSize;
+            if (isOversized) hasOversizedFiles = true;
+            
+            const item = document.createElement('div');
+            item.className = 'file-preview-item';
+            if (isOversized) {
+                item.style.borderLeft = '3px solid #EF4444';
+            }
+            
+            item.innerHTML = `
+                <div class="file-preview-info">
+                    <span class="file-preview-icon">${getFileIcon(file.name)}</span>
+                    <div class="file-preview-details">
+                        <span class="file-preview-name" title="${file.name}">${file.name}</span>
+                        <span class="file-preview-size" ${isOversized ? 'style="color: #EF4444; font-weight: bold;"' : ''}>
+                            ${formatFileSize(file.size)} ${isOversized ? '(Too large!)' : ''}
+                        </span>
+                    </div>
+                </div>
+                <button type="button" onclick="removeFile(${index})" class="btn-remove" title="Remove file">×</button>
+            `;
+            fileList.appendChild(item);
+        });
+        
+        // Show actions and total size
+        fileActions.style.display = 'flex';
+        fileActions.style.justifyContent = 'space-between';
+        fileActions.style.alignItems = 'center';
+        totalSizeSpan.innerHTML = `Total: <strong>${formatFileSize(totalSize)}</strong>`;
+        
+        if (hasOversizedFiles) {
+            const warning = document.createElement('div');
+            warning.className = 'alert alert-warning';
+            warning.style.marginTop = '10px';
+            warning.innerHTML = `
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                    Some files exceed the 100MB limit and cannot be uploaded.
+                </div>
+            `;
+            fileList.appendChild(warning);
+        }
+        
+        uploadBtn.style.display = 'block';
+        uploadBtn.textContent = `Upload ${selectedFiles.length} File${selectedFiles.length > 1 ? 's' : ''}`;
+        uploadBtn.disabled = hasOversizedFiles;
+        if (hasOversizedFiles) {
+            uploadBtn.title = 'Remove oversized files to continue';
+        }
+    } else {
+        uploadBtn.style.display = 'none';
+        fileActions.style.display = 'none';
+    }
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    
+    // Update the file input with remaining files
+    if (selectedFiles.length > 0) {
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        fileInput.files = dt.files;
+    } else {
+        // Clear the input if no files left
+        fileInput.value = '';
+    }
+    
+    displayFiles();
+}
+
+// Clear all files
+function clearAllFiles() {
+    selectedFiles = [];
+    fileInput.value = '';
+    displayFiles();
+}
+
+// Upload with progress
+uploadForm.addEventListener('submit', function(e) {
+    if (selectedFiles.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one file to upload.');
+        return;
+    }
+    
+    // Verify files are in the input
+    if (fileInput.files.length === 0) {
+        e.preventDefault();
+        // Restore files to input
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => {
+            dt.items.add(file);
+        });
+        fileInput.files = dt.files;
+        // Re-submit the form
+        uploadForm.submit();
+        return;
+    }
+    
+    console.log(`Uploading ${fileInput.files.length} files...`);
+    
+    // Show progress bar
+    uploadProgress.style.display = 'block';
+    uploadBtn.disabled = true;
+    
+    // Simulate progress (since we're using regular form submit)
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 30;
+        if (progress > 90) {
+            progress = 90; // Stay at 90% until actual completion
+            clearInterval(interval);
+        }
+        progressFill.style.width = progress + '%';
+        progressText.textContent = `Uploading ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''}... ${Math.round(progress)}%`;
+    }, 200);
+});
+
+function copyWebsiteURL() {
+    const urlInput = document.getElementById('website-url');
+    if (!urlInput) return;
+    
+    urlInput.select();
+    urlInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        document.execCommand('copy');
+        
+        // Show feedback
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        btn.style.background = '#10B981';
+        btn.style.color = 'white';
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+    }
+}
+
+function toggleHelp() {
+    const helpPanel = document.getElementById('helpPanel');
+    if (helpPanel) {
+        helpPanel.style.display = helpPanel.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function showPublishingLoader() {
+    const loader = document.getElementById('publishingLoader');
+    if (loader) {
+        loader.style.display = 'flex';
+        
+        // Start the publishing animation sequence
+        startPublishingAnimation();
+        
+        // Don't auto-hide, let the form submission complete
+        // The page will reload after successful publishing
+    }
+}
+
+function startPublishingAnimation() {
+    const steps = [
+        { id: 'step1', text: 'Scanning Files', subtext: 'Analyzing your website structure and finding index files...', duration: 1800 },
+        { id: 'step2', text: 'Organizing Folders', subtext: 'Processing folder hierarchy and file relationships...', duration: 2000 },
+        { id: 'step3', text: 'Validating Code', subtext: 'Checking HTML syntax and validating links...', duration: 2200 },
+        { id: 'step4', text: 'Optimizing Assets', subtext: 'Compressing images and minifying code...', duration: 2000 },
+        { id: 'step5', text: 'Configuring Server', subtext: 'Setting up hosting environment...', duration: 1800 },
+        { id: 'step6', text: 'Generating URL', subtext: 'Creating your unique website address...', duration: 1500 },
+        { id: 'step7', text: 'Final Deployment', subtext: 'Publishing your website to the cloud...', duration: 1700 }
+    ];
+    
+    const loaderText = document.getElementById('loaderText');
+    const loaderSubtext = document.getElementById('loaderSubtext');
+    const progressFill = document.getElementById('publishingProgressFill');
+    const tipsElement = document.getElementById('publishingTips');
+    
+    const tips = [
+        '💡 Tip: You can password protect your website for extra security',
+        '🎨 Tip: Make sure your CSS files are linked correctly',
+        '⚡ Tip: Optimize images for faster loading',
+        '🌐 Tip: Your website will be accessible worldwide',
+        '🚀 Tip: Updates are reflected instantly after publishing'
+    ];
+    
+    let currentStep = 0;
+    let progressPercent = 0;
+    
+    // Change tips periodically
+    let tipIndex = 0;
+    const tipInterval = setInterval(() => {
+        if (tipsElement) {
+            tipIndex = (tipIndex + 1) % tips.length;
+            tipsElement.innerHTML = `<p class="tip">${tips[tipIndex]}</p>`;
+        }
+    }, 3000);
+    
+    function processStep() {
+        if (currentStep >= steps.length) {
+            // Publishing complete - form will submit and page will reload
+            clearInterval(tipInterval);
+            return;
+        }
+        
+        const step = steps[currentStep];
+        const stepElement = document.getElementById(step.id);
+        
+        // Update previous steps as completed
+        if (currentStep > 0) {
+            const prevStep = steps[currentStep - 1];
+            const prevElement = document.getElementById(prevStep.id);
+            if (prevElement) {
+                prevElement.classList.remove('active');
+                prevElement.classList.add('completed');
+                prevElement.querySelector('.step-status').textContent = '✅';
+            }
+        }
+        
+        // Activate current step
+        if (stepElement) {
+            stepElement.classList.add('active');
+            stepElement.querySelector('.step-status').textContent = '⚙️';
+        }
+        
+        // Update main text
+        if (loaderText) loaderText.textContent = step.text;
+        if (loaderSubtext) loaderSubtext.textContent = step.subtext;
+        
+        // Update progress bar
+        progressPercent = ((currentStep + 1) / steps.length) * 100;
+        if (progressFill) progressFill.style.width = progressPercent + '%';
+        
+        // Move to next step
+        currentStep++;
+        
+        // Schedule next step
+        setTimeout(processStep, step.duration);
+    }
+    
+    // Start processing
+    processStep();
+}
+
+// Success Modal Functions
+function showSuccessModal(websiteUrl) {
+    const modal = document.getElementById('publishSuccess');
+    const urlInput = document.getElementById('successUrl');
+    const viewBtn = document.getElementById('viewWebsiteBtn');
+    
+    if (modal && urlInput && viewBtn) {
+        urlInput.value = websiteUrl;
+        viewBtn.href = websiteUrl;
+        modal.style.display = 'flex';
+        
+        // Create confetti
+        createConfetti();
+    }
+}
+
+function closeSuccessModal() {
+    const modal = document.getElementById('publishSuccess');
+    if (modal) {
+        modal.style.display = 'none';
+        // Reload page to show updated status
+        window.location.reload();
+    }
+}
+
+function copySuccessUrl() {
+    const urlInput = document.getElementById('successUrl');
+    if (urlInput) {
+        urlInput.select();
+        urlInput.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+            btn.textContent = originalText;
+        }, 2000);
+    }
+}
+
+function createConfetti() {
+    const container = document.getElementById('confettiContainer');
+    if (!container) return;
+    
+    const colors = ['#667eea', '#764ba2', '#10B981', '#F59E0B', '#EF4444', '#3B82F6'];
+    const confettiCount = 50;
+    
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            container.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                confetti.remove();
+            }, 4000);
+        }, i * 50);
+    }
+}
+
+// Upgrade Modal Functions
+function showUpgradeModal() {
+    const modal = document.getElementById('upgradeModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeUpgradeModal() {
+    const modal = document.getElementById('upgradeModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Close modal on outside click
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'upgradeModal') {
+        closeUpgradeModal();
+    }
+});
+
+// Enhanced file display with folder structure
+function displayFilesWithFolders() {
+    const filesByFolder = {};
+    
+    selectedFiles.forEach(file => {
+        const path = file.webkitRelativePath || file.name;
+        const parts = path.split('/');
+        const folder = parts.length > 1 ? parts.slice(0, -1).join('/') : 'root';
+        
+        if (!filesByFolder[folder]) {
+            filesByFolder[folder] = [];
+        }
+        filesByFolder[folder].push(file);
+    });
+    
+    // Display organized by folders
+    console.log('Files organized by folders:', filesByFolder);
+}
+
+// Debug: Check if multiple attribute is properly set
+console.log('File input multiple attribute:', fileInput.hasAttribute('multiple'));
+console.log('File input accept attribute:', fileInput.getAttribute('accept'));
+</script>
+{% endblock %}

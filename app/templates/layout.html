@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FileLink Pro - Professional File Sharing Platform{% endblock %}</title>
+    <meta name="description" content="{% block description %}Create permanent links for your files with FileLink Pro. Share files securely with password protection and analytics.{% endblock %}">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="nav-logo">FileLink Pro</a>
+                <div class="nav-menu">
+                    <a href="/features" class="nav-link">Features</a>
+                    <a href="/pricing" class="nav-link">Pricing</a>
+                    <a href="/docs" class="nav-link">Docs</a>
+                    <a href="/editor" class="nav-link">Code Editor</a>
+                    {% if session.user_id %}
+                        <a href="{{ url_for('auth.dashboard') }}" class="nav-link">Dashboard</a>
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="nav-link">Sign In</a>
+                        <a href="{{ url_for('auth.register') }}" class="nav-link nav-cta">Get Started</a>
+                    {% endif %}
+                </div>
+                <!-- Mobile menu button -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/features" class="mobile-nav-link">Features</a>
+        <a href="/pricing" class="mobile-nav-link">Pricing</a>
+        <a href="/docs" class="mobile-nav-link">Docs</a>
+        <a href="/editor" class="mobile-nav-link">Code Editor</a>
+        <a href="/upload" class="mobile-nav-link">Upload File</a>
+        {% if session.user_id %}
+            <a href="{{ url_for('auth.dashboard') }}" class="mobile-nav-link">Dashboard</a>
+            <a href="{{ url_for('auth.logout') }}" class="mobile-nav-link">Logout</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="mobile-nav-link">Sign In</a>
+            <a href="{{ url_for('auth.register') }}" class="mobile-nav-link">Get Started</a>
+        {% endif %}
+    </div>
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="ms-footer">
+        <div class="ms-container">
+            <div class="ms-footer-content">
+                <!-- Main Footer Section -->
+                <div class="ms-footer-main">
+                    <div class="ms-footer-brand">
+                        <div class="ms-footer-logo">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="#0078d4">
+                                <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+                            </svg>
+                            <span class="ms-brand-name">FileLink Pro</span>
+                        </div>
+                        <p class="ms-footer-description">
+                            The professional file sharing platform trusted by thousands of users worldwide. Secure, reliable, and built for scale.
+                        </p>
+                        <div class="ms-footer-stats">
+                            <div class="ms-stat-item">
+                                <span class="ms-stat-number">10M+</span>
+                                <span class="ms-stat-label">Files Shared</span>
+                            </div>
+                            <div class="ms-stat-item">
+                                <span class="ms-stat-number">99.9%</span>
+                                <span class="ms-stat-label">Uptime</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ms-footer-links">
+                        <div class="ms-footer-column">
+                            <h4 class="ms-footer-title">Product</h4>
+                            <ul class="ms-footer-list">
+                                <li><a href="/features" class="ms-footer-link">Features</a></li>
+                                <li><a href="/pricing" class="ms-footer-link">Pricing</a></li>
+                                <li><a href="/docs" class="ms-footer-link">Documentation</a></li>
+                                <li><a href="/api" class="ms-footer-link">API Reference</a></li>
+                                <li><a href="/integrations" class="ms-footer-link">Integrations</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="ms-footer-column">
+                            <h4 class="ms-footer-title">Solutions</h4>
+                            <ul class="ms-footer-list">
+                                <li><a href="/enterprise" class="ms-footer-link">Enterprise</a></li>
+                                <li><a href="/teams" class="ms-footer-link">Teams</a></li>
+                                <li><a href="/developers" class="ms-footer-link">Developers</a></li>
+                                <li><a href="/security" class="ms-footer-link">Security</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="ms-footer-column">
+                            <h4 class="ms-footer-title">Resources</h4>
+                            <ul class="ms-footer-list">
+                                <li><a href="/help" class="ms-footer-link">Help Center</a></li>
+                                <li><a href="/blog" class="ms-footer-link">Blog</a></li>
+                                <li><a href="/community" class="ms-footer-link">Community</a></li>
+                                <li><a href="/status" class="ms-footer-link">System Status</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="ms-footer-column">
+                            <h4 class="ms-footer-title">Company</h4>
+                            <ul class="ms-footer-list">
+                                <li><a href="/about" class="ms-footer-link">About Us</a></li>
+                                <li><a href="/careers" class="ms-footer-link">Careers</a></li>
+                                <li><a href="/contact" class="ms-footer-link">Contact</a></li>
+                                <li><a href="/press" class="ms-footer-link">Press Kit</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Security & Trust Section -->
+                <div class="ms-footer-trust">
+                    <div class="ms-trust-badges">
+                        <div class="ms-trust-item">
+                            <div class="ms-trust-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M10,17L6,13L7.41,11.59L10,14.17L16.59,7.58L18,9L10,17Z"/>
+                                </svg>
+                            </div>
+                            <span>SOC 2 Compliant</span>
+                        </div>
+                        <div class="ms-trust-item">
+                            <div class="ms-trust-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10A2,2 0 0,1 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                                </svg>
+                            </div>
+                            <span>256-bit SSL</span>
+                        </div>
+                        <div class="ms-trust-item">
+                            <div class="ms-trust-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
+                                </svg>
+                            </div>
+                            <span>GDPR Ready</span>
+                        </div>
+                        <div class="ms-trust-item">
+                            <div class="ms-trust-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#107c10">
+                                    <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z"/>
+                                </svg>
+                            </div>
+                            <span>99.9% SLA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer Bottom -->
+                <div class="ms-footer-bottom">
+                    <div class="ms-footer-bottom-left">
+                        <p class="ms-copyright">&copy; 2024 FileLink Pro. All rights reserved.</p>
+                        <div class="ms-legal-links">
+                            <a href="/privacy" class="ms-legal-link">Privacy Policy</a>
+                            <a href="/terms" class="ms-legal-link">Terms of Service</a>
+                            <a href="/cookies" class="ms-legal-link">Cookie Policy</a>
+                        </div>
+                    </div>
+                    <div class="ms-footer-bottom-right">
+                        <div class="ms-social-links">
+                            <a href="#" class="ms-social-link" aria-label="Twitter">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M23,3A10.9,10.9 0 0,1 20.1,4.8A4.86,4.86 0 0,0 22.4,2.9A9.69,9.69 0 0,1 19.7,4.3A4.86,4.86 0 0,0 12.8,8.3A13.86,13.86 0 0,1 1.7,3.1A4.86,4.86 0 0,0 3.2,9.7A4.86,4.86 0 0,1 0.9,9.1V9.3A4.86,4.86 0 0,0 4.8,14.1A4.86,4.86 0 0,1 2.3,14.7A4.86,4.86 0 0,0 6.8,18.1A9.69,9.69 0 0,1 0.1,20.3A13.86,13.86 0 0,0 7.5,22.5C16.5,22.5 21.5,14.9 21.5,8.3C21.5,8.1 21.5,7.9 21.5,7.7A9.69,9.69 0 0,0 23.4,5.6C22.2,6.1 20.9,6.4 19.5,6.5A4.86,4.86 0 0,0 21.2,4.3L23,3Z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="ms-social-link" aria-label="GitHub">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="ms-social-link" aria-label="LinkedIn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M18.5,18.5V13.2A3.26,3.26 0 0,0 15.24,9.94C14.39,9.94 13.4,10.46 12.92,11.24V10.13H10.13V18.5H12.92V13.57C12.92,12.8 13.54,12.17 14.31,12.17A1.4,1.4 0 0,1 15.71,13.57V18.5H18.5M6.88,8.56A1.68,1.68 0 0,0 8.56,6.88C8.56,5.95 7.81,5.19 6.88,5.19A1.69,1.69 0 0,0 5.19,6.88C5.19,7.81 5.95,8.56 6.88,8.56M8.27,18.5V10.13H5.5V18.5H8.27Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="ms-language-selector">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.9,17.39C17.64,16.59 16.89,16 16,16H15V13A1,1 0 0,0 14,12H8V10H10A1,1 0 0,0 11,9V7H13A2,2 0 0,0 15,5V4.59C17.93,5.77 20,8.64 20,12C20,14.08 19.2,15.97 17.9,17.39M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A2,2 0 0,0 11,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                            </svg>
+                            <span>English (US)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

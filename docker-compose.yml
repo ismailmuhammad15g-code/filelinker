@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: filelink-web
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - DATABASE_URL=postgresql://filelink:filelink_password@db:5432/filelink_db
+    volumes:
+      - ./uploads:/app/uploads
+      - ./filelink.db:/app/filelink.db  # For SQLite in development
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - filelink-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: filelink-db
+    environment:
+      - POSTGRES_USER=filelink
+      - POSTGRES_PASSWORD=filelink_password
+      - POSTGRES_DB=filelink_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - filelink-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: filelink-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./uploads:/app/uploads:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks:
+      - filelink-network
+
+volumes:
+  postgres_data:
+
+networks:
+  filelink-network:
+    driver: bridge

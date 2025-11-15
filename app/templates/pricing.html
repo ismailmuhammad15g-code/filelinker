@@ -1,0 +1,179 @@
+{% extends "layout.html" %}
+
+{% block title %}Pricing - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="pricing-page">
+    <div class="container">
+        <div class="pricing-header">
+            <h1 class="page-title">Simple, Transparent Pricing</h1>
+            <p class="page-subtitle">Choose the plan that works best for you</p>
+        </div>
+        
+        <div class="pricing-grid">
+            {% for plan in plans %}
+            <div class="pricing-card {% if plan.get('highlighted') %}highlighted{% endif %}">
+                {% if plan.get('highlighted') %}
+                <div class="badge">Most Popular</div>
+                {% endif %}
+                
+                <h3 class="plan-name">{{ plan.name }}</h3>
+                <div class="plan-price">
+                    <span class="price">{{ plan.price }}</span>
+                    {% if plan.price != 'Custom' %}
+                    <span class="period">/month</span>
+                    {% endif %}
+                </div>
+                
+                <ul class="plan-features">
+                    {% for feature in plan.features %}
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        {{ feature }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <a href="/upload" class="btn btn-primary btn-block">{{ plan.cta }}</a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="pricing-faq">
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <h3>Can I change plans anytime?</h3>
+                <p>Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>What payment methods do you accept?</h3>
+                <p>We accept all major credit cards, PayPal, and wire transfers for enterprise customers.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Is there a file size limit?</h3>
+                <p>Each plan has different storage limits. Individual files can be up to 100MB on all plans.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h3>Do you offer refunds?</h3>
+                <p>Yes, we offer a 30-day money-back guarantee for all paid plans.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.pricing-page {
+    padding: 60px 0;
+    min-height: 80vh;
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto 60px;
+}
+
+.pricing-card {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.pricing-card.highlighted {
+    border: 2px solid #0D6EFD;
+    transform: scale(1.05);
+}
+
+.badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0D6EFD;
+    color: white;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.plan-name {
+    font-size: 24px;
+    margin-bottom: 1rem;
+}
+
+.plan-price {
+    margin-bottom: 2rem;
+}
+
+.price {
+    font-size: 48px;
+    font-weight: 700;
+    color: #0B2545;
+}
+
+.period {
+    color: #6B7280;
+    font-size: 16px;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    text-align: left;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    color: #4A5568;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.pricing-faq {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.pricing-faq h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.faq-item {
+    margin-bottom: 2rem;
+}
+
+.faq-item h3 {
+    font-size: 18px;
+    margin-bottom: 0.5rem;
+    color: #0B2545;
+}
+
+.faq-item p {
+    color: #6B7280;
+}
+</style>
+{% endblock %}

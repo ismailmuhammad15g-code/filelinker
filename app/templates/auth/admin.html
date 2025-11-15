@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Admin Panel - FileLink Pro{% endblock %}
+{% block content %}
+<section class="admin-page">
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p>{{ total_users }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Files</h3>
+                <p>{{ total_files }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Websites</h3>
+                <p>{{ total_websites }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

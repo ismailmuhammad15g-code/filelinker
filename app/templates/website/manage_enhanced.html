@@ -1,0 +1,654 @@
+{% extends "layout.html" %}
+
+{% block title %}Manage Website - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="manage-website-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>{{ website.name }}</h1>
+            <p>Manage your website files and settings</p>
+            <div class="website-status">
+                {% if website.is_published %}
+                    <span class="badge badge-success">Published</span>
+                {% else %}
+                    <span class="badge badge-warning">Not Published</span>
+                {% endif %}
+                {% if website.password_hash %}
+                    <span class="badge badge-info">Password Protected</span>
+                {% endif %}
+                {% if website.is_public %}
+                    <span class="badge badge-primary">Public</span>
+                {% else %}
+                    <span class="badge badge-secondary">Private</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <div class="alert-icon">
+                            {% if category == 'success' %}
+                                ✅
+                            {% elif category == 'error' %}
+                                ❌
+                            {% elif category == 'warning' %}
+                                ⚠️
+                            {% else %}
+                                ℹ️
+                            {% endif %}
+                        </div>
+                        <div class="alert-content">{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="website-url-section">
+            {% if website.is_published %}
+                <div class="url-display">
+                    <label>Your Website URL:</label>
+                    <div class="url-input-group">
+                        <input type="text" id="website-url" value="{{ request.host_url }}site/{{ website.slug }}" readonly>
+                        <button onclick="copyWebsiteURL()" class="btn btn-copy">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                        <a href="/site/{{ website.slug }}" target="_blank" class="btn btn-view">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                            View Site
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="management-grid">
+            <!-- File Upload Section -->
+            <div class="upload-section">
+                <div class="section-header">
+                    <h2>Upload Files</h2>
+                    <button class="btn btn-help" onclick="toggleHelp()">?</button>
+                </div>
+
+                <div class="help-panel" id="helpPanel" style="display:none;">
+                    <h4>📌 Important Notes:</h4>
+                    <ul>
+                        <li><strong>index.html Required:</strong> Your website must have an index.html file to be published</li>
+                        <li><strong>File Organization:</strong> Create folders to organize your files (e.g., /css, /js, /images)</li>
+                        <li><strong>Relative Paths:</strong> Use relative paths in your HTML (e.g., ./css/style.css)</li>
+                        <li><strong>File Size Limit:</strong> Maximum 50MB per file</li>
+                    </ul>
+                </div>
+
+                <form id="uploadForm" method="POST" enctype="multipart/form-data" action="{{ url_for('website.upload_files', website_id=website.id) }}">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <div class="upload-text">
+                            <p><strong>Drag & Drop files here</strong></p>
+                            <p>or</p>
+                            <label for="file-input" class="btn btn-primary">Browse Files</label>
+                            <input type="file" id="file-input" name="files" multiple accept="*" style="display:none;">
+                        </div>
+                        <div class="accepted-types">
+                            <small>Accepted: HTML, CSS, JS, Images (JPG, PNG, GIF, SVG), Videos, PDFs, and more</small>
+                        </div>
+                    </div>
+                    <div id="fileList" class="file-preview-list"></div>
+                    <button type="submit" class="btn btn-success btn-upload" id="uploadBtn" style="display:none;">
+                        Upload Files
+                    </button>
+                </form>
+            </div>
+
+            <!-- Current Files Section -->
+            <div class="files-section">
+                <div class="section-header">
+                    <h2>Current Files</h2>
+                    <span class="file-count">{{ files|length }} files</span>
+                </div>
+
+                {% if not has_index %}
+                    <div class="alert alert-warning">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-content">
+                            <strong>Missing index.html</strong><br>
+                            Upload an index.html file to publish your website
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="files-list">
+                    {% if files %}
+                        {% for file in files %}
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <span class="file-icon">
+                                        {% if file.filename.endswith('.html') %}
+                                            📄
+                                        {% elif file.filename.endswith('.css') %}
+                                            🎨
+                                        {% elif file.filename.endswith('.js') %}
+                                            ⚡
+                                        {% elif file.filename.endswith(('.jpg', '.jpeg', '.png', '.gif', '.svg')) %}
+                                            🖼️
+                                        {% elif file.filename.endswith(('.mp4', '.webm', '.avi')) %}
+                                            🎥
+                                        {% elif file.filename.endswith('.pdf') %}
+                                            📑
+                                        {% else %}
+                                            📁
+                                        {% endif %}
+                                    </span>
+                                    <div class="file-details">
+                                        <span class="file-name">{{ file.filename }}</span>
+                                        <span class="file-size">{{ (file.size / 1024)|round(1) }} KB</span>
+                                    </div>
+                                </div>
+                                <div class="file-actions">
+                                    <a href="{{ url_for('website.download_file', website_id=website.id, file_id=file.id) }}" 
+                                       class="btn-icon" title="Download">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('website.delete_file', website_id=website.id, file_id=file.id) }}" 
+                                          style="display:inline;" onsubmit="return confirm('Delete this file?');">
+                                        <button type="submit" class="btn-icon btn-danger" title="Delete">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <p>No files uploaded yet</p>
+                            <small>Start by uploading your HTML files</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            {% if has_index and not website.is_published %}
+                <form method="POST" action="{{ url_for('website.publish_website', website_id=website.id) }}">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Publish Website
+                    </button>
+                </form>
+            {% elif website.is_published %}
+                <form method="POST" action="{{ url_for('website.unpublish_website', website_id=website.id) }}">
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        Unpublish Website
+                    </button>
+                </form>
+            {% endif %}
+            
+            <button onclick="openSettings()" class="btn btn-secondary btn-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 1.54l4.24 4.24M21 12h-6m-6 0H3m13.22 4.22l4.24 4.24M1.54 20.46l4.24-4.24"></path>
+                </svg>
+                Settings
+            </button>
+            
+            <form method="POST" action="{{ url_for('website.delete_website', website_id=website.id) }}" 
+                  onsubmit="return confirm('Are you sure you want to delete this website? This action cannot be undone.');" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Delete Website
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+.manage-website-page {
+    padding: 40px 0;
+    min-height: 80vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.page-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 36px;
+    margin-bottom: 0.5rem;
+}
+
+.website-status {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-success { background: #10B981; color: white; }
+.badge-warning { background: #F59E0B; color: white; }
+.badge-info { background: #3B82F6; color: white; }
+.badge-primary { background: #667eea; color: white; }
+.badge-secondary { background: #6B7280; color: white; }
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.alert-icon {
+    font-size: 20px;
+    margin-right: 1rem;
+}
+
+.alert-success { border-left: 4px solid #10B981; }
+.alert-error { border-left: 4px solid #EF4444; }
+.alert-warning { border-left: 4px solid #F59E0B; }
+.alert-info { border-left: 4px solid #3B82F6; }
+
+.website-url-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.url-display label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.url-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.url-input-group input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 6px;
+    font-family: monospace;
+    background: #F9FAFB;
+}
+
+.btn-copy, .btn-view {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+}
+
+.management-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.upload-section, .files-section {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 20px;
+    color: #0B2545;
+    margin: 0;
+}
+
+.btn-help {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #E5E7EB;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.help-panel {
+    background: #F3F4F6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.help-panel h4 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+}
+
+.help-panel ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.help-panel li {
+    margin: 0.25rem 0;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.upload-area {
+    border: 2px dashed #CBD5E1;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.upload-area.dragover {
+    border-color: #667eea;
+    background: #F0F4FF;
+}
+
+.upload-icon svg {
+    color: #9CA3AF;
+}
+
+.upload-text {
+    margin: 1rem 0;
+}
+
+.upload-text p {
+    margin: 0.5rem 0;
+    color: #6B7280;
+}
+
+.accepted-types {
+    margin-top: 1rem;
+}
+
+.accepted-types small {
+    color: #9CA3AF;
+}
+
+.file-preview-list {
+    margin-top: 1rem;
+}
+
+.file-preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #F9FAFB;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.btn-upload {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.file-count {
+    background: #E5E7EB;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.files-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #F9FAFB;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    transition: background 0.2s;
+}
+
+.file-item:hover {
+    background: #F3F4F6;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.file-icon {
+    font-size: 24px;
+}
+
+.file-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-name {
+    font-weight: 500;
+    color: #374151;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    padding: 0.5rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover {
+    background: #F9FAFB;
+    border-color: #CBD5E1;
+}
+
+.btn-icon.btn-danger {
+    color: #EF4444;
+}
+
+.btn-icon.btn-danger:hover {
+    background: #FEF2F2;
+    border-color: #FCA5A5;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9CA3AF;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .url-input-group {
+        flex-direction: column;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// File Upload Handling
+const fileInput = document.getElementById('file-input');
+const uploadArea = document.getElementById('uploadArea');
+const fileList = document.getElementById('fileList');
+const uploadBtn = document.getElementById('uploadBtn');
+let selectedFiles = [];
+
+fileInput.addEventListener('change', handleFiles);
+
+uploadArea.addEventListener('click', () => {
+    fileInput.click();
+});
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFiles({ target: { files: e.dataTransfer.files } });
+});
+
+function handleFiles(e) {
+    selectedFiles = Array.from(e.target.files);
+    displayFiles();
+}
+
+function displayFiles() {
+    fileList.innerHTML = '';
+    
+    if (selectedFiles.length > 0) {
+        selectedFiles.forEach((file, index) => {
+            const item = document.createElement('div');
+            item.className = 'file-preview-item';
+            item.innerHTML = `
+                <span>${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                <button type="button" onclick="removeFile(${index})" class="btn-icon">×</button>
+            `;
+            fileList.appendChild(item);
+        });
+        uploadBtn.style.display = 'block';
+    } else {
+        uploadBtn.style.display = 'none';
+    }
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    displayFiles();
+}
+
+function copyWebsiteURL() {
+    const urlInput = document.getElementById('website-url');
+    urlInput.select();
+    document.execCommand('copy');
+    
+    // Show feedback
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+    }, 2000);
+}
+
+function toggleHelp() {
+    const helpPanel = document.getElementById('helpPanel');
+    helpPanel.style.display = helpPanel.style.display === 'none' ? 'block' : 'none';
+}
+
+function openSettings() {
+    // Implement settings modal
+    alert('Settings feature coming soon!');
+}
+</script>
+{% endblock %}

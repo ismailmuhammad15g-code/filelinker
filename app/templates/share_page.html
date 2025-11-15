@@ -1,0 +1,441 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ file.original_filename }} - FileLink Pro{% endblock %}
+
+{% block content %}
+<div class="ms-share-page">
+    <div class="ms-container">
+        <!-- Header -->
+        <div class="ms-header">
+            <div class="ms-breadcrumb">
+                <a href="/">Home</a>
+                <span class="ms-separator">></span>
+                <span class="ms-current">{{ file.original_filename }}</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="ms-content">
+            <!-- File Preview Card -->
+            <div class="ms-file-card">
+                <div class="ms-file-header">
+                    <div class="ms-file-icon">
+                        {% set ext = file.original_filename.split('.')[-1].lower() if '.' in file.original_filename else 'file' %}
+                        {% if ext in ['pdf'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#d13438">
+                            <path d="M20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H8V4H20V16Z"/>
+                        </svg>
+                        {% elif ext in ['doc', 'docx'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#2b579a">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        {% elif ext in ['xls', 'xlsx'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#107c41">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        {% elif ext in ['ppt', 'pptx'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#d24726">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        {% elif ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c5ce7">
+                            <path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z"/>
+                        </svg>
+                        {% elif ext in ['mp4', 'avi', 'mov', 'wmv'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#e17055">
+                            <path d="M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z"/>
+                        </svg>
+                        {% elif ext in ['zip', 'rar', '7z'] %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#fdcb6e">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        {% else %}
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#74b9ff">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    <div class="ms-file-info">
+                        <h1 class="ms-file-name">{{ file.original_filename }}</h1>
+                        <div class="ms-file-details">
+                            <span class="ms-detail">{{ (file.file_size / 1024 / 1024)|round(2) if file.file_size > 1024*1024 else (file.file_size / 1024)|round(2) if file.file_size > 1024 else file.file_size }} {{ 'MB' if file.file_size > 1024*1024 else 'KB' if file.file_size > 1024 else 'bytes' }}</span>
+                            <span class="ms-separator">•</span>
+                            <span class="ms-detail">{{ file.upload_date.strftime('%B %d, %Y') }}</span>
+                            <span class="ms-separator">•</span>
+                            <span class="ms-detail">{{ link.view_count }} view{{ 's' if link.view_count != 1 else '' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="ms-actions">
+                    <a href="{{ url_for('share.download_file', slug=link.slug, password=request.args.get('password')) }}" class="ms-btn ms-btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,13H13V3H11V13H5L12,20L19,13Z"/>
+                        </svg>
+                        Download
+                    </a>
+                    
+                    {% if preview %}
+                    <button class="ms-btn ms-btn-secondary" id="previewBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                        </svg>
+                        Preview
+                    </button>
+                    {% endif %}
+                    
+                    <button class="ms-btn ms-btn-secondary" id="copyLinkBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16,1H4C2.89,1 2,1.89 2,3V17H4V3H16V1M19,5H8C6.89,5 6,5.89 6,7V21C6,22.11 6.89,23 8,23H19C20.11,23 21,22.11 21,21V7C21,5.89 20.11,5 19,5M19,21H8V7H19V21Z"/>
+                        </svg>
+                        Copy link
+                    </button>
+                </div>
+
+                <!-- Share Link Input -->
+                <div class="ms-share-section">
+                    <div class="ms-input-group">
+                        <input type="text" id="shareLink" class="ms-share-input" value="{{ request.url }}" readonly>
+                        <button class="ms-share-copy" id="copyBtn2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16,1H4C2.89,1 2,1.89 2,3V17H4V3H16V1M19,5H8C6.89,5 6,5.89 6,7V21C6,22.11 6.89,23 8,23H19C20.11,23 21,22.11 21,21V7C21,5.89 20.11,5 19,5M19,21H8V7H19V21Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            {% if preview %}
+            <div id="previewSection" class="ms-preview-section" style="display: none;">
+                <div class="ms-preview-header">
+                    <h3>File Preview</h3>
+                    <button class="ms-btn ms-btn-text" id="closePreviewBtn">Close</button>
+                </div>
+                
+                <!-- Loading Indicator -->
+                <div id="previewLoading" class="ms-preview-loading">
+                    <div class="ms-loading-spinner">
+                        <div class="ms-spinner"></div>
+                    </div>
+                    <div class="ms-loading-text">
+                        <h4>Loading preview...</h4>
+                        <p>Please wait while we prepare your file for viewing</p>
+                    </div>
+                </div>
+                
+                <!-- Preview Container -->
+                <div class="ms-preview-container" id="previewContainer" style="display: none;">
+                    {% if preview_type == 'image' %}
+                    <div class="ms-image-preview">
+                        <img id="previewImage" class="ms-preview-img" alt="{{ file.original_filename }}">
+                    </div>
+                    {% elif preview_type == 'pdf' %}
+                    <div class="ms-pdf-preview">
+                        <embed id="previewPDF" type="application/pdf" class="ms-preview-pdf">
+                    </div>
+                    {% elif preview_type == 'audio' %}
+                    <div class="ms-audio-preview">
+                        <div class="ms-media-info">
+                            <div class="ms-media-icon">
+                                <svg width="64" height="64" viewBox="0 0 24 24" fill="#0078d4">
+                                    <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13A3,3 0 0,0 7,16A3,3 0 0,0 10,19A3,3 0 0,0 13,16V6H19V4H12Z"/>
+                                </svg>
+                            </div>
+                            <h4>{{ file.original_filename }}</h4>
+                        </div>
+                        <audio id="previewAudio" controls class="ms-preview-audio">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                    {% elif preview_type == 'video' %}
+                    <div class="ms-video-preview">
+                        <video id="previewVideo" controls class="ms-preview-video">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    {% elif preview_type in ['text', 'html'] %}
+                    <div class="ms-text-preview">
+                        <div class="ms-code-header">
+                            <span class="ms-file-type">{{ file.get_file_extension().upper() }}</span>
+                            <span class="ms-file-name">{{ file.original_filename }}</span>
+                        </div>
+                        <div class="ms-code-container">
+                            <pre id="previewText" class="ms-code-content"></pre>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="ms-unsupported-preview">
+                        <div class="ms-error-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="#6c757d">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                        <h4>Preview not available</h4>
+                        <p>This file type cannot be previewed. Please download the file to view it.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Error State -->
+                <div id="previewError" class="ms-preview-error" style="display: none;">
+                    <div class="ms-error-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#d13438">
+                            <path d="M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z"/>
+                        </svg>
+                    </div>
+                    <h4>Preview not available</h4>
+                    <p>This file type cannot be previewed in the browser. Please download the file to view it.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- File Details -->
+            <div class="ms-details-section">
+                <h3 class="ms-section-title">File details</h3>
+                <div class="ms-details-grid">
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Name</span>
+                        <span class="ms-detail-value">{{ file.original_filename }}</span>
+                    </div>
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Size</span>
+                        <span class="ms-detail-value" id="formattedSize">{{ file.file_size }} bytes</span>
+                    </div>
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Type</span>
+                        <span class="ms-detail-value">{{ file.mime_type }}</span>
+                    </div>
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Uploaded</span>
+                        <span class="ms-detail-value">{{ file.upload_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Link created</span>
+                        <span class="ms-detail-value">{{ link.created_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    {% if link.expiry_date %}
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Expires</span>
+                        <span class="ms-detail-value">{{ link.expiry_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    {% else %}
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Expires</span>
+                        <span class="ms-detail-value">Never</span>
+                    </div>
+                    {% endif %}
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Views</span>
+                        <span class="ms-detail-value">{{ link.view_count }}</span>
+                    </div>
+                    {% if link.last_accessed %}
+                    <div class="ms-detail-row">
+                        <span class="ms-detail-label">Last accessed</span>
+                        <span class="ms-detail-value">{{ link.last_accessed.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Format file size
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Format the file size on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const formattedSizeElement = document.getElementById('formattedSize');
+    if (formattedSizeElement) {
+        const fileSize = parseInt(formattedSizeElement.textContent);
+        formattedSizeElement.textContent = formatFileSize(fileSize);
+    }
+});
+
+// Copy link functionality
+function copyLink(button) {
+    const linkInput = document.getElementById('shareLink');
+    linkInput.select();
+    document.execCommand('copy');
+    
+    const originalHTML = button.innerHTML;
+    button.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+        </svg>
+        Copied!
+    `;
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+    }, 2000);
+}
+
+// Add event listeners with error checking
+document.addEventListener('DOMContentLoaded', function() {
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const copyBtn2 = document.getElementById('copyBtn2');
+    
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', function() {
+            copyLink(this);
+        });
+    }
+    
+    if (copyBtn2) {
+        copyBtn2.addEventListener('click', function() {
+            copyLink(this);
+        });
+    }
+});
+
+{% if preview %}
+// Enhanced Preview functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const previewBtn = document.getElementById('previewBtn');
+    const previewSection = document.getElementById('previewSection');
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+    const previewLoading = document.getElementById('previewLoading');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewError = document.getElementById('previewError');
+    const previewType = '{{ preview_type }}';
+    const previewUrl = '{{ url_for("share.preview_file", slug=link.slug, password=request.args.get("password")) }}';
+    
+    if (previewBtn) {
+        previewBtn.addEventListener('click', function() {
+            previewSection.style.display = 'block';
+            previewLoading.style.display = 'flex';
+            previewContainer.style.display = 'none';
+            previewError.style.display = 'none';
+            
+            // Scroll to preview
+            previewSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Load preview based on type
+            loadPreview(previewType, previewUrl);
+        });
+    }
+    
+    if (closePreviewBtn) {
+        closePreviewBtn.addEventListener('click', function() {
+            previewSection.style.display = 'none';
+            
+            // Stop any media playback
+            const audio = document.getElementById('previewAudio');
+            const video = document.getElementById('previewVideo');
+            if (audio) audio.pause();
+            if (video) video.pause();
+        });
+    }
+    
+    function loadPreview(type, url) {
+        setTimeout(() => {
+            try {
+                switch(type) {
+                    case 'image':
+                        loadImage(url);
+                        break;
+                    case 'pdf':
+                        loadPDF(url);
+                        break;
+                    case 'audio':
+                        loadAudio(url);
+                        break;
+                    case 'video':
+                        loadVideo(url);
+                        break;
+                    case 'text':
+                    case 'html':
+                        loadText(url);
+                        break;
+                    default:
+                        showError();
+                        break;
+                }
+            } catch (error) {
+                showError();
+            }
+        }, 500); // Minimum loading time for better UX
+    }
+    
+    function loadImage(url) {
+        const img = document.getElementById('previewImage');
+        img.onload = function() {
+            hideLoading();
+        };
+        img.onerror = function() {
+            showError();
+        };
+        img.src = url;
+    }
+    
+    function loadPDF(url) {
+        const pdf = document.getElementById('previewPDF');
+        pdf.onload = function() {
+            hideLoading();
+        };
+        pdf.onerror = function() {
+            showError();
+        };
+        pdf.src = url;
+    }
+    
+    function loadAudio(url) {
+        const audio = document.getElementById('previewAudio');
+        audio.onloadeddata = function() {
+            hideLoading();
+        };
+        audio.onerror = function() {
+            showError();
+        };
+        audio.src = url;
+    }
+    
+    function loadVideo(url) {
+        const video = document.getElementById('previewVideo');
+        video.onloadeddata = function() {
+            hideLoading();
+        };
+        video.onerror = function() {
+            showError();
+        };
+        video.src = url;
+    }
+    
+    function loadText(url) {
+        fetch(url)
+            .then(response => response.text())
+            .then(text => {
+                const preElement = document.getElementById('previewText');
+                preElement.textContent = text;
+                hideLoading();
+            })
+            .catch(() => {
+                showError();
+            });
+    }
+    
+    function hideLoading() {
+        previewLoading.style.display = 'none';
+        previewContainer.style.display = 'block';
+    }
+    
+    function showError() {
+        previewLoading.style.display = 'none';
+        previewError.style.display = 'flex';
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

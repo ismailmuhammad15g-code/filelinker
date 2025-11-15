@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+
+{% block title %}FileLink Pro - Create Permanent Links for Your Files{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Create Permanent Links for Your Files</h1>
+            <p class="hero-subtitle">Share files instantly with secure, permanent links. Support for any file type with HTML preview, password protection, and detailed analytics.</p>
+            <div class="hero-actions">
+                <a href="/upload" class="btn btn-primary btn-lg">Upload a File</a>
+                <a href="/editor" class="btn btn-primary btn-lg">Code Editor</a>
+                <a href="#features" class="btn btn-secondary btn-lg">Learn More</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">{{ stats.files }}</span>
+                    <span class="stat-label">Files Uploaded</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">{{ stats.links }}</span>
+                    <span class="stat-label">Links Created</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">{{ stats.views }}</span>
+                    <span class="stat-label">Total Views</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upload Section -->
+<section class="upload-section">
+    <div class="container">
+        <div class="upload-box">
+            <div class="upload-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </div>
+            <h2 class="upload-title">Drop Your File Here</h2>
+            <p class="upload-text">or click to browse</p>
+            <form id="quickUploadForm" action="/upload/process" method="POST" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="file" class="file-input" />
+                <label for="fileInput" class="upload-label">Choose File</label>
+            </form>
+            <p class="upload-info">Maximum file size: 100MB • All file types supported</p>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose FileLink Pro?</h2>
+        <p class="section-subtitle">Professional file sharing with enterprise-grade features</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <h3 class="feature-title">Permanent Links</h3>
+                <p class="feature-description">Generate permanent, shareable links that never expire. Perfect for documentation, portfolios, and long-term file sharing.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👁️</div>
+                <h3 class="feature-title">HTML Preview</h3>
+                <p class="feature-description">Preview HTML, CSS, and JavaScript files directly in the browser. Perfect for sharing web projects and demonstrations.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Secure Sharing</h3>
+                <p class="feature-description">Protect your files with password authentication. Control who can access your content with enterprise-level security.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Detailed Analytics</h3>
+                <p class="feature-description">Track views, downloads, and engagement. Get insights into how your shared files are being accessed.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Lightning Fast</h3>
+                <p class="feature-description">Upload files up to 100MB instantly. Our optimized infrastructure ensures fast uploads and downloads.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3 class="feature-title">Global Access</h3>
+                <p class="feature-description">Access your files from anywhere in the world. Our CDN ensures fast access regardless of location.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Three simple steps to share your files</p>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Upload Your File</h3>
+                <p class="step-description">Drag and drop or click to upload any file type up to 100MB</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Get Your Link</h3>
+                <p class="step-description">Receive a permanent, unique link instantly after upload</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Share Anywhere</h3>
+                <p class="step-description">Share your link via email, social media, or embed it anywhere</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Start Sharing?</h2>
+            <p class="cta-text">Join thousands of professionals using FileLink Pro for secure file sharing</p>
+            <a href="/upload" class="btn btn-primary btn-lg">Upload Your First File</a>
+        </div>
+    </div>
+</section>
+
+<!-- Success Modal (Hidden by default) -->
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h2 class="modal-title">File Uploaded Successfully!</h2>
+        <div class="modal-body">
+            <p>Your file has been uploaded and a permanent link has been generated.</p>
+            <div class="link-box">
+                <input type="text" id="generatedLink" class="link-input" readonly>
+                <button id="copyLinkBtn" class="btn btn-primary">Copy Link</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Quick upload functionality
+document.getElementById('fileInput').addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Show loading state
+        document.querySelector('.upload-title').textContent = 'Uploading...';
+        
+        fetch('/upload/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success modal
+                document.getElementById('generatedLink').value = data.link.url;
+                document.getElementById('uploadModal').style.display = 'block';
+                
+                // Reset upload box
+                document.querySelector('.upload-title').textContent = 'Drop Your File Here';
+                document.getElementById('fileInput').value = '';
+            } else {
+                alert('Upload failed: ' + (data.error || 'Unknown error'));
+                document.querySelector('.upload-title').textContent = 'Drop Your File Here';
+            }
+        })
+        .catch(error => {
+            alert('Upload failed: ' + error);
+            document.querySelector('.upload-title').textContent = 'Drop Your File Here';
+        });
+    }
+});
+
+// Modal functionality
+document.querySelector('.modal-close').addEventListener('click', function() {
+    document.getElementById('uploadModal').style.display = 'none';
+});
+
+// Copy link functionality
+document.getElementById('copyLinkBtn').addEventListener('click', function() {
+    const linkInput = document.getElementById('generatedLink');
+    linkInput.select();
+    document.execCommand('copy');
+    this.textContent = 'Copied!';
+    setTimeout(() => {
+        this.textContent = 'Copy Link';
+    }, 2000);
+});
+</script>
+{% endblock %}

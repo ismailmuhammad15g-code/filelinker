@@ -1,0 +1,248 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Website - FileLink Pro{% endblock %}
+
+{% block content %}
+<div class="ms-create-website-page">
+    <div class="ms-container">
+        <!-- Hero Section -->
+        <div class="ms-hero">
+            <div class="ms-breadcrumb">
+                <a href="/">Home</a>
+                <span class="ms-separator">></span>
+                <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
+                <span class="ms-separator">></span>
+                <span class="ms-current">Create Website</span>
+            </div>
+            <h1 class="ms-hero-title">Create your professional website</h1>
+            <p class="ms-hero-subtitle">Build and publish static websites with custom domains, analytics, and more. Perfect for portfolios, documentation, and landing pages.</p>
+        </div>
+
+        <div class="ms-create-layout">
+            <!-- Main Form -->
+            <div class="ms-create-form">
+                <div class="ms-form-card">
+                    <div class="ms-form-header">
+                        <div class="ms-form-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="#0078d4">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                        </div>
+                        <h2>Website Details</h2>
+                        <p>Enter the basic information for your new website</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('website.create_website') }}" class="ms-website-form">
+                        <div class="ms-form-group">
+                            <label for="name" class="ms-label">Website Name</label>
+                            <input type="text" id="name" name="name" class="ms-input" required 
+                                   placeholder="My Awesome Website" 
+                                   maxlength="100">
+                            <div class="ms-input-help">
+                                <span class="ms-help-text">This will be used to generate your website URL</span>
+                                <span id="nameCounter" class="ms-char-counter">0/100</span>
+                            </div>
+                        </div>
+
+                        <div class="ms-form-group">
+                            <label for="description" class="ms-label">Description <span class="ms-optional">(Optional)</span></label>
+                            <textarea id="description" name="description" class="ms-textarea" 
+                                      rows="4" maxlength="500"
+                                      placeholder="A brief description of your website's purpose and content..."></textarea>
+                            <div class="ms-input-help">
+                                <span class="ms-help-text">Help visitors understand what your website is about</span>
+                                <span id="descCounter" class="ms-char-counter">0/500</span>
+                            </div>
+                        </div>
+
+                        <div class="ms-form-actions">
+                            <button type="button" onclick="window.history.back()" class="ms-btn ms-btn-secondary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="m12 19-7-7 7-7"></path>
+                                    <path d="M19 12H5"></path>
+                                </svg>
+                                Cancel
+                            </button>
+                            <button type="submit" class="ms-btn ms-btn-primary ms-btn-large" id="createBtn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.828 14.828a4 4 0 0 1-5.656 0M9 10h1M15 10h1M21 12c0 4.418-3.582 8-8 8a9.935 9.935 0 0 1-2.864-.413A3.995 3.995 0 0 0 14 16v-5a4.001 4.001 0 0 0-7.9-.8A5.001 5.001 0 0 0 2 16v1a2 2 0 0 0 2 2h5.5M21 12V9a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v3"></path>
+                                </svg>
+                                Create Website
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar Information -->
+            <div class="ms-create-sidebar">
+                <!-- Features Overview -->
+                <div class="ms-info-card">
+                    <h3>What you'll get</h3>
+                    <div class="ms-features-list">
+                        <div class="ms-feature-item">
+                            <div class="ms-feature-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#107c10">
+                                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Static Site Hosting</strong>
+                                <p>Upload HTML, CSS, JS files and folders</p>
+                            </div>
+                        </div>
+                        
+                        <div class="ms-feature-item">
+                            <div class="ms-feature-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#107c10">
+                                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Automatic Deployment</strong>
+                                <p>Instant publishing with one click</p>
+                            </div>
+                        </div>
+                        
+                        <div class="ms-feature-item">
+                            <div class="ms-feature-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#107c10">
+                                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Custom URL</strong>
+                                <p>Unique filelink.pro/site/your-name address</p>
+                            </div>
+                        </div>
+                        
+                        <div class="ms-feature-item">
+                            <div class="ms-feature-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#107c10">
+                                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Password Protection</strong>
+                                <p>Secure your site with optional passwords</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Comparison -->
+                <div class="ms-info-card ms-plan-card">
+                    <h3>Choose your plan</h3>
+                    <div class="ms-plan-comparison">
+                        <div class="ms-plan">
+                            <div class="ms-plan-header">
+                                <h4>Free</h4>
+                                <div class="ms-plan-price">$0<span>/month</span></div>
+                            </div>
+                            <ul class="ms-plan-features">
+                                <li>✓ 100MB Storage</li>
+                                <li>✓ 50 Files per site</li>
+                                <li>✓ Basic analytics</li>
+                                <li>✗ Custom domains</li>
+                                <li>❗ Watermark included</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="ms-plan ms-plan-pro">
+                            <div class="ms-plan-badge">RECOMMENDED</div>
+                            <div class="ms-plan-header">
+                                <h4>Pro</h4>
+                                <div class="ms-plan-price">$9.99<span>/month</span></div>
+                            </div>
+                            <ul class="ms-plan-features">
+                                <li>✓ 10GB Storage</li>
+                                <li>✓ Unlimited files</li>
+                                <li>✓ Advanced analytics</li>
+                                <li>✓ Custom domains</li>
+                                <li>✓ No watermark</li>
+                            </ul>
+                            <a href="#" class="ms-btn ms-btn-primary ms-btn-small">Upgrade</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tips -->
+                <div class="ms-info-card ms-tips-card">
+                    <h3>💡 Quick Tips</h3>
+                    <ul class="ms-tips-list">
+                        <li>Use descriptive names for better SEO</li>
+                        <li>Prepare your HTML files before uploading</li>
+                        <li>Ensure you have an index.html file</li>
+                        <li>Test locally before publishing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Character counters
+const nameInput = document.getElementById('name');
+const descInput = document.getElementById('description');
+const nameCounter = document.getElementById('nameCounter');
+const descCounter = document.getElementById('descCounter');
+
+if (nameInput && nameCounter) {
+    nameInput.addEventListener('input', function() {
+        const count = this.value.length;
+        nameCounter.textContent = `${count}/100`;
+        if (count > 80) {
+            nameCounter.style.color = '#d83b01';
+        } else {
+            nameCounter.style.color = '#605e5c';
+        }
+    });
+}
+
+if (descInput && descCounter) {
+    descInput.addEventListener('input', function() {
+        const count = this.value.length;
+        descCounter.textContent = `${count}/500`;
+        if (count > 400) {
+            descCounter.style.color = '#d83b01';
+        } else {
+            descCounter.style.color = '#605e5c';
+        }
+    });
+}
+
+// Form validation and submission
+const form = document.querySelector('.ms-website-form');
+const createBtn = document.getElementById('createBtn');
+
+if (form) {
+    form.addEventListener('submit', function(e) {
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+            e.preventDefault();
+            nameInput.focus();
+            nameInput.style.borderColor = '#d83b01';
+            return false;
+        }
+        
+        // Show loading state
+        createBtn.disabled = true;
+        createBtn.innerHTML = `
+            <div class="ms-spinner"></div>
+            Creating Website...
+        `;
+    });
+}
+
+// Reset border color on focus
+if (nameInput) {
+    nameInput.addEventListener('focus', function() {
+        this.style.borderColor = '#0078d4';
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+
+{% block title %}Contact Us - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="contact-page">
+    <div class="container">
+        <h1 class="page-title">Contact Us</h1>
+        <p class="page-subtitle">We're here to help and answer any questions you might have</p>
+        
+        <div class="contact-content">
+            <div class="contact-info">
+                <div class="info-item">
+                    <h3>📧 Email</h3>
+                    <p>support@filelinkpro.com</p>
+                    <p class="info-note">We typically respond within 24 hours</p>
+                </div>
+                
+                <div class="info-item">
+                    <h3>💬 Live Chat</h3>
+                    <p>Available Monday-Friday</p>
+                    <p class="info-note">9:00 AM - 5:00 PM EST</p>
+                </div>
+                
+                <div class="info-item">
+                    <h3>📍 Office</h3>
+                    <p>FileLink Pro Inc.</p>
+                    <p>123 Tech Street</p>
+                    <p>San Francisco, CA 94105</p>
+                </div>
+            </div>
+            
+            <div class="contact-form">
+                <h2>Send us a message</h2>
+                <form method="POST" action="#" onsubmit="alert('Contact form submission would be processed here'); return false;">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject" name="subject" class="form-input">
+                            <option>General Inquiry</option>
+                            <option>Technical Support</option>
+                            <option>Sales Question</option>
+                            <option>Feature Request</option>
+                            <option>Bug Report</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" class="form-input" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.contact-page {
+    padding: 60px 0;
+    min-height: 80vh;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+    max-width: 1000px;
+    margin: 3rem auto 0;
+}
+
+.info-item {
+    margin-bottom: 2rem;
+}
+
+.info-item h3 {
+    font-size: 20px;
+    margin-bottom: 0.5rem;
+    color: #0B2545;
+}
+
+.info-item p {
+    color: #4A5568;
+    margin-bottom: 0.25rem;
+}
+
+.info-note {
+    font-size: 14px;
+    color: #6B7280;
+    font-style: italic;
+}
+
+.contact-form {
+    background: #F7F9FB;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.contact-form h2 {
+    margin-bottom: 1.5rem;
+    color: #0B2545;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    font-size: 16px;
+    background: white;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #0D6EFD;
+}
+
+textarea.form-input {
+    resize: vertical;
+    font-family: inherit;
+}
+
+@media (max-width: 768px) {
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+</style>
+{% endblock %}

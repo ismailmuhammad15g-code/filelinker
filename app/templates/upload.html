@@ -1,0 +1,427 @@
+{% extends "layout.html" %}
+
+{% block title %}Upload File - FileLink Pro{% endblock %}
+
+{% block content %}
+<section class="upload-page">
+    <div class="container">
+        <h1 class="page-title">Upload Your File</h1>
+        <p class="page-subtitle">Upload any file and get a permanent shareable link instantly</p>
+        
+        <div class="ms-upload-container">
+            <div class="ms-upload-layout">
+                <!-- Left side - Upload Area -->
+                <div class="ms-upload-main">
+                    <div class="ms-upload-card">
+                        <h3 class="ms-card-title">Upload Files</h3>
+                        
+                        <div class="ms-drop-box" id="uploadArea">
+                            <div class="ms-drop-content">
+                                <div class="ms-upload-animation">
+                                    <img src="{{ url_for('static', filename='animatedfiles/Upload Document.gif') }}" alt="Upload Animation" class="ms-upload-gif">
+                                </div>
+                                <div class="ms-drop-header">
+                                    <h4 class="ms-drop-title">Select File here</h4>
+                                </div>
+                                <p class="ms-drop-text">Files Supported: All file types supported</p>
+                                <form id="uploadForm" method="POST" action="/upload/process" enctype="multipart/form-data">
+                                    <input type="file" id="fileInput" name="file" class="ms-file-input" required />
+                                    <button type="button" class="ms-btn ms-btn-choose" id="chooseFileBtn">Choose File</button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- File Preview -->
+                        <div id="filePreview" class="ms-file-preview" style="display: none;">
+                            <div class="ms-selected-file">
+                                <div class="ms-file-info">
+                                    <h4 class="ms-file-name"></h4>
+                                    <p class="ms-file-size"></p>
+                                </div>
+                                <button type="button" class="ms-btn ms-btn-secondary ms-btn-small" id="changeFileBtn">Change</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right side - Options -->
+                <div class="ms-upload-sidebar">
+                    <div class="ms-options-card">
+                        <h3 class="ms-card-title">Optional Settings</h3>
+                        
+                        <div class="ms-form-group">
+                            <label for="password" class="ms-form-label">Password Protection</label>
+                            <input type="password" id="password" name="password" class="ms-form-input" placeholder="Leave blank for no password">
+                            <small class="ms-form-help">Protect your file with a password</small>
+                        </div>
+                        
+                        <div class="ms-form-group">
+                            <label for="expiry_days" class="ms-form-label">Link Expiry (Days)</label>
+                            <input type="number" id="expiry_days" name="expiry_days" class="ms-form-input" min="0" placeholder="0 for permanent">
+                            <small class="ms-form-help">Set to 0 or leave blank for permanent links</small>
+                        </div>
+                        
+                        <button type="submit" form="uploadForm" class="ms-btn ms-btn-primary ms-btn-full" id="uploadBtn" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload File
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upload Progress -->
+            <div id="uploadProgress" class="upload-progress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text">Uploading... <span id="progressPercent">0</span>%</p>
+            </div>
+            
+            <!-- Success Result -->
+            <div id="uploadSuccess" class="ms-upload-success" style="display: none;">
+                <div class="ms-success-card">
+                    <!-- Success Header -->
+                    <div class="ms-success-header">
+                        <div class="ms-success-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" fill="#107c10"/>
+                                <path d="M8.5 12.5l2 2 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="ms-success-content">
+                            <h2 class="ms-success-title">File uploaded successfully</h2>
+                            <p class="ms-success-subtitle">Your file has been uploaded and is ready to share</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Share Link Section -->
+                    <div class="ms-success-section">
+                        <h3 class="ms-section-title">Share Link</h3>
+                        <div class="ms-success-link-box">
+                            <div class="ms-input-group">
+                                <input type="text" id="generatedLink" class="ms-share-input" readonly placeholder="Link will appear here">
+                                <button class="ms-share-copy" id="copyBtn" type="button">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="ms-link-help">
+                                <span class="ms-help-text">Anyone with this link can access your file</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="ms-success-section">
+                        <div class="ms-success-actions">
+                            <a href="#" id="viewLink" class="ms-btn ms-btn-primary" target="_blank">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                View File
+                            </a>
+                            <button class="ms-btn ms-btn-secondary" id="uploadAnotherBtn" type="button">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17,8 12,3 7,8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                Upload Another
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- File Details -->
+                    <div id="fileDetails" class="ms-success-section ms-file-details"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Uploads (if user is logged in) -->
+        <div class="recent-uploads" style="display: none;">
+            <h2>Recent Uploads</h2>
+            <div class="uploads-list">
+                <!-- Populated via JavaScript if user session exists -->
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// File upload handling
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const uploadForm = document.getElementById('uploadForm');
+const filePreview = document.getElementById('filePreview');
+const uploadProgress = document.getElementById('uploadProgress');
+const uploadSuccess = document.getElementById('uploadSuccess');
+const chooseFileBtn = document.getElementById('chooseFileBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+
+// Drag and drop functionality
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('ms-dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('ms-dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('ms-dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        showFilePreview(files[0]);
+    }
+});
+
+// Choose file button click
+chooseFileBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    fileInput.click();
+});
+
+// Click to upload on drop area (but not on buttons)
+uploadArea.addEventListener('click', (e) => {
+    if (e.target.closest('.ms-btn') || e.target.closest('form')) {
+        return;
+    }
+    fileInput.click();
+});
+
+// File selection
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        showFilePreview(e.target.files[0]);
+    }
+});
+
+// Show file preview
+function showFilePreview(file) {
+    const fileName = document.querySelector('.ms-file-name');
+    const fileSize = document.querySelector('.ms-file-size');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    
+    // Hide upload area and show file preview
+    uploadArea.style.display = 'none';
+    filePreview.style.display = 'block';
+    
+    // Enable upload button
+    uploadBtn.disabled = false;
+    uploadBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Upload ${file.name.length > 20 ? file.name.substring(0, 20) + '...' : file.name}
+    `;
+}
+
+// Change file button
+document.getElementById('changeFileBtn').addEventListener('click', () => {
+    fileInput.click();
+    uploadArea.style.display = 'block';
+    filePreview.style.display = 'none';
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Upload File
+    `;
+});
+
+// Format file size
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Form submission
+uploadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Check if a file is selected
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Please select a file to upload.');
+        fileInput.click();
+        return;
+    }
+    
+    const formData = new FormData(uploadForm);
+    
+    // Add optional settings to form data
+    const password = document.getElementById('password').value;
+    const expiryDays = document.getElementById('expiry_days').value;
+    
+    if (password) {
+        formData.append('password', password);
+    }
+    if (expiryDays) {
+        formData.append('expiry_days', expiryDays);
+    }
+    
+    // Show progress
+    document.querySelector('.ms-upload-main').style.display = 'none';
+    uploadProgress.style.display = 'block';
+    
+    try {
+        // Simulate upload progress (real implementation would use XMLHttpRequest)
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 10;
+            if (progress <= 90) {
+                updateProgress(progress);
+            }
+        }, 200);
+        
+        const response = await fetch('/upload/process', {
+            method: 'POST',
+            body: formData
+        });
+        
+        clearInterval(progressInterval);
+        updateProgress(100);
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showSuccess(data);
+        } else {
+            showError(data.error || 'Upload failed');
+        }
+    } catch (error) {
+        showError('Network error: ' + error.message);
+    }
+});
+
+// Update progress bar
+function updateProgress(percent) {
+    document.getElementById('progressFill').style.width = percent + '%';
+    document.getElementById('progressPercent').textContent = percent;
+}
+
+// Show success message
+function showSuccess(data) {
+    uploadProgress.style.display = 'none';
+    uploadSuccess.style.display = 'block';
+    
+    // Set link
+    document.getElementById('generatedLink').value = data.link.url;
+    document.getElementById('viewLink').href = data.link.url;
+    
+    // Show file details with Microsoft-style design
+    const details = document.getElementById('fileDetails');
+    details.innerHTML = `
+        <h3 class="ms-section-title">File Information</h3>
+        <div class="ms-details-grid">
+            <div class="ms-detail-row">
+                <span class="ms-detail-label">File Name</span>
+                <span class="ms-detail-value">${data.file.name}</span>
+            </div>
+            <div class="ms-detail-row">
+                <span class="ms-detail-label">File Size</span>
+                <span class="ms-detail-value">${formatFileSize(data.file.size)}</span>
+            </div>
+            <div class="ms-detail-row">
+                <span class="ms-detail-label">File Type</span>
+                <span class="ms-detail-value">${data.file.type}</span>
+            </div>
+            <div class="ms-detail-row">
+                <span class="ms-detail-label">Password Protected</span>
+                <span class="ms-detail-value">${data.link.password_protected ? 'Yes' : 'No'}</span>
+            </div>
+            <div class="ms-detail-row">
+                <span class="ms-detail-label">Expiry Date</span>
+                <span class="ms-detail-value">${data.link.expiry_date ? new Date(data.link.expiry_date).toLocaleDateString() : 'Never'}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Show error message
+function showError(message) {
+    uploadProgress.style.display = 'none';
+    document.querySelector('.ms-upload-main').style.display = 'block';
+    alert('Error: ' + message);
+}
+
+// Copy link button
+document.getElementById('copyBtn').addEventListener('click', async () => {
+    const linkInput = document.getElementById('generatedLink');
+    const btn = document.getElementById('copyBtn');
+    
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            // Use modern clipboard API
+            await navigator.clipboard.writeText(linkInput.value);
+        } else {
+            // Fallback to old method
+            linkInput.select();
+            document.execCommand('copy');
+        }
+        
+        // Show success feedback
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+        `;
+        btn.style.background = '#107c10';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+    }
+});
+
+// Upload another file
+document.getElementById('uploadAnotherBtn').addEventListener('click', () => {
+    uploadSuccess.style.display = 'none';
+    document.querySelector('.ms-upload-main').style.display = 'block';
+    uploadArea.style.display = 'block';
+    uploadForm.reset();
+    filePreview.style.display = 'none';
+    uploadBtn.disabled = true;
+    
+    // Clear optional settings
+    document.getElementById('password').value = '';
+    document.getElementById('expiry_days').value = '';
+    uploadBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Upload File
+    `;
+});
+</script>
+{% endblock %}
