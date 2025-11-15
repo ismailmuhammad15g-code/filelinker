@@ -18,7 +18,7 @@ Flask-Limiter==3.5.0
 python-dotenv==1.0.0
 
 # Production server (Unix/Linux only)
-# gunicorn==21.2.0  # Uncomment for production deployment on Unix/Linux
+gunicorn==21.2.0  # For production deployment on Unix/Linux
 
 # Windows production server alternative
 waitress==2.1.2  # Works on Windows
